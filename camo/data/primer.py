@@ -126,8 +126,26 @@ figure_3_7 = SCM.from_structure(
 )
 
 # TODO: figure_3_8 = None
-# TODO: figure_3_10_a = None
-# TODO: figure_3_10_b = None
+
+figure_3_10_a = SCM.from_structure(
+    V={"Smoking", "LungCancer"},
+    E={
+        ("Genotype", "Smoking"),
+        ("Genotype", "LungCancer"),
+        ("Smoking", "LungCancer")
+    }
+)
+
+figure_3_10_b = SCM.from_structure(
+    V={"Smoking", "LungCancer", "TarDeposits"},
+    E={
+        ("Genotype", "Smoking"),
+        ("Genotype", "LungCancer"),
+        ("Smoking", "TarDeposits"),
+        ("TarDeposits", "LungCancer")
+    }
+)
+
 # TODO: figure_3_11 = None
 # TODO: figure_3_12 = None
 # TODO: figure_3_13 = None

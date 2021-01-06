@@ -22,3 +22,7 @@ def test_backdoor_criterion():
         for S in adjustment_sets
     ))
     """
+
+    for model in [primer.figure_3_10_a, primer.figure_3_10_b]:
+        assert(not is_backdoor_adjustment_set(model, "Smoking", "LungCancer"))
+        assert(backdoor_all_adjustment_sets(model, "Smoking", "LungCancer") == [])
