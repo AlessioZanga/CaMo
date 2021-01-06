@@ -2,7 +2,6 @@ from sympy.parsing.sympy_parser import parse_expr
 
 from typing import Any, Dict, Iterable, Set, Tuple
 
-from .directed_graph import topological_sort
 from .directed_markov_graph import DirectedMarkovGraph
 
 
