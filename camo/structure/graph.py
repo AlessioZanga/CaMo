@@ -52,8 +52,8 @@ class Graph:
         subgraph = self._G.subgraph(V)
         return type(self)(subgraph.nodes, subgraph.edges)
     
-    def paths(self, u: str, v: str) -> Set[List[str]]:
-        return set(nx.all_simple_paths(self._G, u, v))
+    def paths(self, u: str, v: str) -> List[List[str]]:
+        return list(nx.all_simple_paths(self._G, u, v))
     
     def plot(self) -> None:
         sty = {"node_shape": ""}
