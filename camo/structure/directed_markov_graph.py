@@ -14,6 +14,19 @@ class DirectedMarkovGraph(DirectedGraph):
         E: Iterable[Tuple[str, str]] = None
     ):
         super().__init__(V, E)
+    
+    @property
+    def probability_distribution(self) -> str:
+        P = [
+            (v, self.parents(v))
+            for v in self.topological_sort()
+        ]
+        P = [
+            f"P({v}|{','.join(parents)})"
+            if parents else f"P({v})"
+            for (v, parents) in P
+        ]
+        return ''.join(P)
 
     @property
     def v_structures(self) -> Set[Tuple[str]]:
