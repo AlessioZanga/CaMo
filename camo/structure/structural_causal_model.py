@@ -112,7 +112,7 @@ class StructuralCausalModel(DirectedMarkovGraph):
             v: f"""Eq(Symbol('{v}'), Function(Symbol('f_{v}'))({
                 ', '.join([f"Symbol('{p}')" for p in G.parents(v)])
             }))"""
-            for v in topological_sort(G)
+            for v in G.topological_sort()
             if v in V
         }
 
