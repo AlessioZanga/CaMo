@@ -3,7 +3,7 @@ import networkx as nx
 from itertools import combinations
 from typing import Iterable, Set, Tuple
 
-from .directed_graph import DirectedGraph
+from .directed_graph import DirectedGraph, topological_sort
 
 
 class DirectedMarkovGraph(DirectedGraph):
@@ -19,7 +19,7 @@ class DirectedMarkovGraph(DirectedGraph):
     def probability_distribution(self) -> str:
         P = [
             (v, self.parents(v))
-            for v in self.topological_sort()
+            for v in topological_sort(self)
         ]
         P = [
             f"P({v}|{','.join(parents)})"
@@ -51,5 +51,8 @@ class DirectedMarkovGraph(DirectedGraph):
         Y = set([Y]) if isinstance(Y, str) else set(Y)
         Z = set([Z]) if isinstance(Z, str) else Z
         Z = set() if Z is None else set(Z)
+
+        if X & Z or Y & Z:
+            return True
 
         return nx.d_separated(self._G, X, Y, Z)

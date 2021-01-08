@@ -2,6 +2,7 @@ from sympy.parsing.sympy_parser import parse_expr
 
 from typing import Any, Dict, Iterable, Set, Tuple
 
+from .directed_graph import topological_sort
 from .directed_markov_graph import DirectedMarkovGraph
 
 
@@ -111,7 +112,7 @@ class StructuralCausalModel(DirectedMarkovGraph):
             v: f"""Eq(Symbol('{v}'), Function(Symbol('f_{v}'))({
                 ', '.join([f"Symbol('{p}')" for p in G.parents(v)])
             }))"""
-            for v in G.topological_sort()
+            for v in topological_sort(G)
             if v in V
         }
 

@@ -30,11 +30,18 @@ class DirectedGraph(Graph):
 
     def descendants(self, v: str) -> Set[str]:
         return set(nx.descendants(self._G, v))
-    
-    def topological_sort(self) -> Iterable[str]:
-        return nx.topological_sort(self._G)
 
     def to_undirected(self) -> Graph:
         G = Graph()
         G._G = self._G.to_undirected()
         return G
+
+
+def moral(G: DirectedGraph) -> Graph:
+    out = Graph()
+    out._G = nx.moral.moral_graph(G._G)
+    return out
+
+
+def topological_sort(G: DirectedGraph) -> Iterable[str]:
+    return nx.topological_sort(G._G)
