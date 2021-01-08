@@ -24,7 +24,7 @@ def is_backdoor_adjustment_set(model: SCM, X: str, Y: str, Z: str = None) -> boo
     return True
 
 
-def backdoor_all_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str]]:
+def all_backdoor_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str]]:
     adjustment_variables = model.endogenous_variables - {X, Y, *model.descendants(X)}
 
     adjustment_sets = [
@@ -35,7 +35,7 @@ def backdoor_all_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str]]:
 
     return adjustment_sets
 
-def backdoor_minimal_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str]]:
+def minimal_backdoor_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str]]:
     adjustment_variables = model.endogenous_variables - {X, Y, *model.descendants(X)}
 
     adjustment_sets = []
