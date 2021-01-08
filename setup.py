@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as file:
 
 setup(
     name="CaMo",
-    version="0.0.1",
+    version="0.0.2",
     author="Alessio Zanga",
     author_email="alessio.zanga@outlook.it",
     license="GNU GENERAL PUBLIC LICENSE - Version 3, 29 June 2007",

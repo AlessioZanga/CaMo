@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [x.y.z] - yyyy-mm-dd
 ### Added
+### Changed
+### Removed
+### Fixed
+
+
+## [0.0.2] - 2020-01-09
+### Added
 * Added GitHub Publish Workflow
 * Added Primer Figures 3.10a and 3.10b and relative tests
 * Added moral graph function
@@ -18,10 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed backdoor adjustement sets to all adjustment sets and minimal adjustment sets
 * Changed backdoor criterion implementation
 
-### Removed
 ### Fixed
 * Fixed all simple paths return type
 * Fixed d-separation
+
 
 ## [0.0.1] - 2020-01-06
 ### Added
