@@ -10,14 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Added GitHub Publish Workflow
 * Added Primer Figures 3.10a and 3.10b and relative tests
+* Added moral graph function
+* Added has_path method
+* Added frontdoor criterion implementation
 
 ### Changed
-* Changed topological_sort as method of DirectedGraph class
 * Changed backdoor adjustement sets to all adjustment sets and minimal adjustment sets
+* Changed backdoor criterion implementation
 
 ### Removed
 ### Fixed
 * Fixed all simple paths return type
+* Fixed d-separation
 
 ## [0.0.1] - 2020-01-06
 ### Added
