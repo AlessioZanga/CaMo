@@ -1,12 +1,11 @@
 from typing import List, Set, Tuple
 
 from ..structure import SCM
-from ..utils import powerset
+from ..utils import powerset, as_set
 
 
 def is_backdoor_adjustment_set(model: SCM, X: str, Y: str, Z: str = None) -> bool:
-    Z = set([Z]) if isinstance(Z, str) else Z
-    Z = set() if Z is None else set(Z)
+    Z = as_set(Z)
 
     Z |= {X}
 
