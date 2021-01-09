@@ -28,6 +28,7 @@ jobs:
         .
     - name: Test a Python package
       run: |
+        pip install .
         pip install pytest-cov
         pytest --cov=camo tests/
     - name: Upload coverage reports to Codecov
