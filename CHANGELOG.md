@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [x.y.z] - yyyy-mm-dd
 ### Added
+* Added initial implementation of generic sampling algorithm for SCM with at least one real feasible solution
+
 ### Changed
 ### Removed
 ### Fixed

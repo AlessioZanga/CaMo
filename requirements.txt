@@ -1,3 +1,7 @@
 matplotlib
 networkx>=2.5
+numpy
+pandas
+scipy
+statsmodels
 sympy

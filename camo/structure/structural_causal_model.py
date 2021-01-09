@@ -1,3 +1,6 @@
+import pandas as pd
+
+from sympy import Eq, solve, stats
 from sympy.parsing.sympy_parser import parse_expr
 
 from typing import Any, Dict, Iterable, Set, Tuple
@@ -51,9 +54,18 @@ class StructuralCausalModel(DirectedMarkovGraph):
     def _parse_expr(self, expr: Dict[str, str]) -> Dict[str, Any]:
         out = {}
         symbols = {}
+        global_symbols = {}
+        # Load global symbols adding stats
+        exec('from sympy import *; from sympy.stats import *', global_symbols)
+        # Begin parsing
         for (k, v) in expr.items():
             # Parse argument
-            out[k] = parse_expr(v, symbols, evaluate=False)
+            out[k] = parse_expr(
+                v,
+                symbols,
+                global_dict=global_symbols,
+                evaluate=False
+            )
             # Add discovered symbols
             for atom in out[k].atoms():
                 if atom.is_Symbol:
@@ -86,6 +98,22 @@ class StructuralCausalModel(DirectedMarkovGraph):
             for u in intervened.parents(v):
                 intervened.del_edge(u, v)
         return intervened
+    
+    def sample(self, size: int) -> pd.DataFrame:
+        # Parse the symbolic expression of the system
+        system = self._parse_expr(dict(self._P, **self._F))
+        # Pre-compute solving order
+        order = [v for v in topological_sort(self) if v in self._V]
+        # Pre-sample from exogenous distribution
+        P = {u: stats.sample_iter(system[u]) for u in self._U}
+        # Sample from equation system
+        samples = []
+        for _ in range(size):
+            sample = {u: next(s) for u, s in P.items()}
+            for v in order:
+                sample[v] = float(solve(system[v].subs(sample), v)[0])
+            samples.append(sample)
+        return pd.DataFrame(samples)
 
     @classmethod
     def from_structure(
