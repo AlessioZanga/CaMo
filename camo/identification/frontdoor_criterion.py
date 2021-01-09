@@ -55,4 +55,4 @@ def minimal_frontdoor_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[st
 
 
 def frontdoor_paths(model: SCM, X: str, Y: str) -> List[Tuple[str]]:
-    raise NotImplementedError()
+    raise NotImplementedError() # TODO

@@ -51,4 +51,4 @@ def minimal_backdoor_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str
 
 
 def backdoor_paths(model: SCM, X: str, Y: str) -> List[Tuple[str]]:
-    raise NotImplementedError()
+    raise NotImplementedError() # TODO

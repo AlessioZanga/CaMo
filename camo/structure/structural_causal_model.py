@@ -74,7 +74,7 @@ class StructuralCausalModel(DirectedMarkovGraph):
 
     @property
     def causal_graph(self) -> Any:
-        raise NotImplementedError()
+        raise NotImplementedError() # TODO
 
     @property
     def endogenous_variables(self) -> Set[str]:
