@@ -6,7 +6,6 @@ import statsmodels.formula.api as smf
 def test_sample():
     model = camo.SCM(
         V=["Z"],
-        U=["X", "Y"],
         F={"Z": "Eq(Z, 2*X+Y)"},
         P={"X": "Uniform(X,0,1)", "Y": "Uniform(Y,0,1)"}
     )
@@ -17,7 +16,6 @@ def test_sample():
 def test_do_sample():
     model = camo.SCM(
         V=["Z"],
-        U=["X", "Y"],
         F={"Z": "Eq(Z, 2*X+Y)"},
         P={"X": "Uniform(X,0,1)", "Y": "Uniform(Y,0,1)"}
     )

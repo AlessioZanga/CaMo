@@ -1,18 +1,15 @@
-import pandas as pd
+from typing import Any, Dict, Iterable, Set, Tuple
 
+import pandas as pd
 from sympy import Eq, solve, stats
 from sympy.parsing.sympy_parser import parse_expr
 
-from typing import Any, Dict, Iterable, Set, Tuple
-
-from .directed_graph import topological_sort
-from .directed_markov_graph import DirectedMarkovGraph
+from ..backend import DirectedGraph, topological_sort
+from .causal_model import CausalModel
 
 
-class StructuralCausalModel(DirectedMarkovGraph):
+class StructuralCausalModel(CausalModel):
 
-    _V: Set[str]
-    _U: Set[str]
     _F: Dict[str, Any]
     _P: Dict[str, Any]
 
@@ -26,25 +23,20 @@ class StructuralCausalModel(DirectedMarkovGraph):
         self._V = set(V) if V else set()
         self._U = set(U) if U else set()
 
-        # Check if V and U are disjoint
-        if self._V & self._U:
-            raise ValueError()
-
         self._F = dict(F) if F else {v: None for v in self._V}
         self._P = dict(P) if P else {u: None for u in self._U}
 
-        V = self._V | self._U
         E = [
             (u.name, v)
             for (v, f) in self._parse_expr(
                 dict(self._P, **self._F)
             ).items()
             if v in self._V
-            for u in f.rhs.args
+            for u in f.rhs.atoms()
             if u.is_Symbol
         ]
 
-        super().__init__(V, E)
+        super().__init__(self._V, self._U, E)
 
     def copy(self):
         return StructuralCausalModel(
@@ -72,18 +64,6 @@ class StructuralCausalModel(DirectedMarkovGraph):
                     symbols[atom.name] = atom
         return out
 
-    @property
-    def causal_graph(self) -> Any:
-        raise NotImplementedError() # TODO
-
-    @property
-    def endogenous_variables(self) -> Set[str]:
-        return set(self._V)
-
-    @property
-    def exogenous_variables(self) -> Set[str]:
-        return set(self._U)
-
     def do(self, **kwargs):
         # Check if v is endogenous
         if not (kwargs.keys() & self._V):
@@ -98,7 +78,7 @@ class StructuralCausalModel(DirectedMarkovGraph):
             for u in intervened.parents(v):
                 intervened.del_edge(u, v)
         return intervened
-    
+
     def sample(self, size: int) -> pd.DataFrame:
         # Parse the symbolic expression of the system
         system = self._parse_expr(dict(self._P, **self._F))
@@ -118,11 +98,10 @@ class StructuralCausalModel(DirectedMarkovGraph):
     @classmethod
     def from_structure(
         cls,
-        V: Iterable[str] = None,
-        E: Iterable[Tuple[str, str]] = None,
+        V: Iterable[str],
+        E: Iterable[Tuple[str, str]],
     ):
-        V = set(V) if V else set()
-        U = set()
+        V, U = set(V), set()
 
         # Check if both vertices are in a vertex set
         # else, add to exogenous variables
@@ -133,7 +112,7 @@ class StructuralCausalModel(DirectedMarkovGraph):
                 U.add(v)
 
         # Build the functional graph
-        G = DirectedMarkovGraph(V | U, E)
+        G = DirectedGraph(V | U, E)
 
         # Build the function set given the graph
         F = {
