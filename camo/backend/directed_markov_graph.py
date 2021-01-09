@@ -4,7 +4,7 @@ from itertools import combinations
 from typing import Iterable, Set, Tuple
 
 from .directed_graph import DirectedGraph, topological_sort
-from ..utils import as_set
+from ..utils import _as_set
 
 
 class DirectedMarkovGraph(DirectedGraph):
@@ -48,7 +48,7 @@ class DirectedMarkovGraph(DirectedGraph):
         return self.has_edge(X, Z) and self.has_edge(Y, Z)
 
     def is_d_separated(self, X: Iterable[str], Y: Iterable[str], Z: Iterable[str] = None) -> bool:
-        X, Y, Z = as_set(X), as_set(Y), as_set(Z)
+        X, Y, Z = _as_set(X), _as_set(Y), _as_set(Z)
 
         if X & Z or Y & Z:
             return True

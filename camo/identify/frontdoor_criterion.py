@@ -2,11 +2,11 @@ from typing import List, Set, Tuple
 
 from .backdoor_criterion import is_backdoor_adjustment_set
 from ..structure import SCM
-from ..utils import powerset, as_set
+from ..utils import powerset, _as_set
 
 
 def is_frontdoor_adjustment_set(model: SCM, X: str, Y: str, Z: str = None) -> bool:
-    Z = as_set(Z)
+    Z = _as_set(Z)
 
     # A set of variables Z is said to satisfy the front-door criterion
     # relative to an ordered pair of variables (X, Y) if:

@@ -1,11 +1,11 @@
 from typing import List, Set, Tuple
 
 from ..structure import SCM
-from ..utils import powerset, as_set
+from ..utils import _powerset, _as_set
 
 
 def is_backdoor_adjustment_set(model: SCM, X: str, Y: str, Z: str = None) -> bool:
-    Z = as_set(Z)
+    Z = _as_set(Z)
 
     Z |= {X}
 
@@ -28,7 +28,7 @@ def all_backdoor_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str]]:
 
     adjustment_sets = [
         set(S)
-        for S in powerset(adjustment_variables)
+        for S in _powerset(adjustment_variables)
         if is_backdoor_adjustment_set(model, X, Y, S)
     ]
 
@@ -38,7 +38,7 @@ def minimal_backdoor_adjustment_sets(model: SCM, X: str, Y: str) -> List[Set[str
     adjustment_variables = model.endogenous_variables - {X, Y, *model.descendants(X)}
 
     adjustment_sets = []
-    for S in powerset(adjustment_variables):
+    for S in _powerset(adjustment_variables):
         S = set(S)
         # An adjustment set is minimal if it is not
         # a super set of any smaller adjustment set
