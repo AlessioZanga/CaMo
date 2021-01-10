@@ -6,6 +6,6 @@ def _try_get(key: str, collection: Dict[str, Any]) -> Any:
         value = collection[key]
     except KeyError:
         raise ValueError(
-            f"Value '{value}' not found, available values are {list(collection.keys())}."
+            f"Value '{key}' not found, available values are {list(collection.keys())}."
         )
     return value
