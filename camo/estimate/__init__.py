@@ -1,5 +1,5 @@
-from .causal_effects import *
-from .estimators import *
+from .effects import *
+from .methods import *
 
 ACE = average_causal_effect
 ATE = average_treatment_effect = average_causal_effect

@@ -4,10 +4,10 @@ from typing import Any, Tuple
 import numpy as np
 import pandas as pd
 
-from . import estimators
+from . import methods
 from ..utils import _to_categorical, _try_get
 
-estimators = dict(getmembers(estimators, isfunction))
+methods = dict(getmembers(methods, isfunction))
 
 
 def average_causal_effect(
@@ -15,12 +15,12 @@ def average_causal_effect(
     X: str,
     Y: str,
     Z: str = None,
-    estimator: str = "g_formula",
-    regressor: str = "ols",
+    method: str = "g_formula",
+    estimator: str = "ols",
     targets: Tuple[Any] = (0, 1)
 ) -> float:
-    # Try get value from estimators
-    estimator = _try_get(estimator, estimators)
+    # Try get value from methods
+    method = _try_get(method, methods)
 
     # Check if data is numeric
     is_numeric = np.vectorize(lambda x: not np.issubdtype(x, np.number))
@@ -31,7 +31,7 @@ def average_causal_effect(
         targets = encoders[X].transform(targets) if X in encoders else targets
 
     # Estimate E[Y|do(X=0),Z] and E[Y|do(X=1),Z]
-    effect_0, effect_1 = estimator(data, X, Y, Z, regressor)
+    effect_0, effect_1 = method(data, X, Y, Z, estimator)
 
     # ACE = E_Z[ E[Y|do(X=1),Z] - E[Y|do(X=0),Z] ]
     return np.mean(effect_1 - effect_0)
