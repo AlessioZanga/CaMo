@@ -1,7 +1,7 @@
-from typing import Any, Dict, Iterable, Set, Tuple
+from typing import Any, Dict, Iterable, Tuple
 
 import pandas as pd
-from sympy import Eq, solve, stats
+from sympy import solve, stats
 from sympy.parsing.sympy_parser import parse_expr
 
 from ..backend import DirectedGraph, topological_sort
