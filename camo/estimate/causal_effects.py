@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from . import estimators
-from ..utils import _as_set, _to_categorical, _try_get
+from ..utils import _to_categorical, _try_get
 
 estimators = dict(getmembers(estimators, isfunction))
 

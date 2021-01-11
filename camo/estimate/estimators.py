@@ -1,7 +1,5 @@
 from inspect import getmembers, ismethod
-from typing import Any, Tuple
 
-import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 

@@ -1,7 +1,7 @@
-import networkx as nx
-
 from itertools import combinations
 from typing import Iterable, Set, Tuple
+
+import networkx as nx
 
 from .graph import Graph
 from .directed_graph import DirectedGraph, topological_sort
@@ -16,7 +16,7 @@ class DirectedMarkovGraph(DirectedGraph):
         E: Iterable[Tuple[str, str]] = None
     ):
         super().__init__(V, E)
-    
+
     @property
     def probability_distribution(self) -> str:
         P = [
@@ -29,7 +29,7 @@ class DirectedMarkovGraph(DirectedGraph):
             for (v, parents) in P
         ]
         return ''.join(P)
-    
+
     @property
     def skeleton(self) -> Graph:
         return self.to_undirected()
@@ -42,10 +42,10 @@ class DirectedMarkovGraph(DirectedGraph):
                 if not self.has_edge(i, j) and not self.has_edge(j, i):
                     v_structures.add((i, v, j))
         return v_structures
-    
+
     @property
     def equivalence_class(self):
-        raise NotImplementedError() # TODO
+        raise NotImplementedError()  # TODO
 
     def is_chain(self, X: str, Y: str, Z: str) -> bool:
         return self.has_edge(X, Y) and self.has_edge(Y, Z)
