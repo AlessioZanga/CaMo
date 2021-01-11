@@ -34,5 +34,7 @@ setup(
     ],
     url="https://github.com/AlessioZanga/CaMo",
     packages=find_packages(),
+    include_package_data=True,
+    package_data={"camo": ["data/*.gz"]},
     install_requires=requirements,
 )
