@@ -1,1 +1,1 @@
-from . import primer
+from . import generated, primer
