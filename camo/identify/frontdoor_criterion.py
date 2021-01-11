@@ -39,6 +39,9 @@ def all_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[st
 
 
 def minimal_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[str]]:
+    if is_frontdoor_adjustment_set(G, X, Y):
+        return [set()]
+
     adjustment_variables = G.endogenous_variables - {X, Y, *G.descendants(X)}
 
     adjustment_sets = []
@@ -54,4 +57,4 @@ def minimal_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Se
 
 
 def frontdoor_paths(G: CausalModel, X: str, Y: str) -> List[Tuple[str]]:
-    raise NotImplementedError() # TODO
+    raise NotImplementedError()  # TODO
