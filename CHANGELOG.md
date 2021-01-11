@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [x.y.z] - yyyy-mm-dd
 ### Added
-* Added initial implementation of generic sampling algorithm for SCM with at least one real feasible solution
-
 ### Changed
 ### Removed
 ### Fixed
+
+
+## [0.0.3] - 2020-01-11
+### Added
+* Added CausalModel abstract superclass
+* Added initial implementation of estimation using G-formula with tests
+* Added initial implementation of estimation using Propensity Score and IPW with tests
+* Added initial implementation of generic sampling algorithm for SCM with at least one real feasible solution
 
 
 ## [0.0.2] - 2020-01-09
