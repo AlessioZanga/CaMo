@@ -41,7 +41,8 @@ def average_causal_effect(
     # ACE = E_Z[ E[Y|do(X=1),Z] - E[Y|do(X=0),Z] ]
     ace = np.mean(effect_1 - effect_0)
 
-    # If bootstrap sample size is specified compute confidence interval
+    # If bootstrap sample size is specified estimate
+    # the confidence interval and the bias
     if bootstrap:
         # Preallocate samples vector
         samples = np.empty((bootstrap, ))
@@ -60,8 +61,10 @@ def average_causal_effect(
             )
         # Compute upper and lower bounds over samples
         quantiles = np.quantile(samples, q=[alpha/2, 1-alpha/2])
+        # Compute the ACE bias
+        bias = np.mean(samples) - ace
         # Return ACE with confidence bounds
-        return ace, *quantiles
+        return ace, *quantiles, bias
     
     return ace
 
