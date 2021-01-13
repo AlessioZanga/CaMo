@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [x.y.z] - yyyy-mm-dd
 ### Added
-* Add Back-door and Front-door paths discover function
+* Added Back-door and Front-door paths discover function
+* Added ACE confidence interval with bootstrap
 
 ### Changed
 ### Removed
