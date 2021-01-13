@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from typing import Iterable, List, Set, Tuple
+from typing import Iterable, Set, Tuple
 
 
 class Graph:
@@ -55,8 +55,8 @@ class Graph:
     def has_path(self, u: str, v: str) -> bool:
         return nx.has_path(self._G, u, v)
 
-    def paths(self, u: str, v: str) -> List[Tuple[str]]:
-        return [tuple(p) for p in nx.all_simple_paths(self._G, u, v)]
+    def paths(self, u: str, v: str) -> Set[Tuple[str]]:
+        return {tuple(p) for p in nx.all_simple_paths(self._G, u, v)}
 
     def plot(self) -> None:
         sty = {"node_shape": ""}

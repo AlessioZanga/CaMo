@@ -56,5 +56,5 @@ def minimal_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Se
     return adjustment_sets
 
 
-def frontdoor_paths(G: CausalModel, X: str, Y: str) -> List[Tuple[str]]:
-    raise NotImplementedError()  # TODO
+def frontdoor_paths(G: CausalModel, X: str, Y: str) -> Set[Tuple[str]]:
+    return G.paths(X, Y)

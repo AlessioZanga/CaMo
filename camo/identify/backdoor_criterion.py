@@ -53,5 +53,5 @@ def minimal_backdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set
     return adjustment_sets
 
 
-def backdoor_paths(model: CausalModel, X: str, Y: str) -> List[Tuple[str]]:
-    raise NotImplementedError()  # TODO
+def backdoor_paths(G: CausalModel, X: str, Y: str) -> Set[Tuple[str]]:
+    return G.to_undirected().paths(X, Y) - G.paths(X, Y)
