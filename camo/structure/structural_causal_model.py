@@ -124,7 +124,7 @@ class StructuralCausalModel(CausalModel):
         }
 
         # Build the probability set given the variables
-        P = {u: f"Uniform(Symbol('{u}'), 0, 1)" for u in U}
+        P = {u: f"Normal(Symbol('{u}'), 0, 1)" for u in U}
 
         return cls(V, U, F, P)
 
