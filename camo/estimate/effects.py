@@ -60,11 +60,11 @@ def average_causal_effect(
                 targets
             )
         # Compute upper and lower bounds over samples
-        quantiles = np.quantile(samples, q=[alpha/2, 1-alpha/2])
+        lower, upper = np.quantile(samples, q=[alpha/2, 1-alpha/2])
         # Compute the ACE bias
         bias = np.mean(samples) - ace
         # Return ACE with confidence bounds
-        return ace, *quantiles, bias
+        return ace, lower, upper, bias
     
     return ace
 
