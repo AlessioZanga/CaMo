@@ -63,6 +63,12 @@ class Graph:
         pos = nx.nx_agraph.pygraphviz_layout(self._G, prog="dot")
         nx.draw(self._G, pos, with_labels=True, **sty)
         plt.show()
+    
+    @classmethod
+    def from_complete(cls, V: Set[str]):
+        G = cls()
+        G._G = nx.complete_graph(V)
+        return G
 
     def __repr__(self):
         return f"{self.__class__.__name__}(V={self.vertices}, E={self.edges})"

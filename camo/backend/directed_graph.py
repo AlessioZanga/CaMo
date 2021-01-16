@@ -36,6 +36,12 @@ class DirectedGraph(Graph):
         G._G = self._G.to_undirected()
         return G
 
+    @classmethod    
+    def from_undirected(cls, other: Graph):
+        G = cls()
+        G._G = other._G.to_directed()
+        return G
+
 
 def moral(G: DirectedGraph) -> Graph:
     out = Graph()
