@@ -1,5 +1,14 @@
-import os
+from os import listdir
+from os.path import dirname, join, sep
+import sys
+
 import pandas as pd
 
 
-estimate = pd.read_csv(os.path.join(os.path.dirname(__file__), "estimate.gz"))
+for file in listdir(dirname(__file__)):
+    if file.endswith(".gz"):
+        setattr(
+            sys.modules[__name__],
+            file.split(sep)[-1][:-3],
+            pd.read_csv(join(dirname(__file__), file))
+        )
