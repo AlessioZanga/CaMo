@@ -8,13 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [x.y.z] - yyyy-mm-dd
 ### Added
-* Added Back-door and Front-door paths discover function
-* Added ACE confidence interval with bootstrap
-* Added conditional independence tests
-
 ### Changed
 ### Removed
 ### Fixed
+
+
+## [0.0.4] - 2020-01-16
+### Added
+* Added Back-door and Front-door paths discover function
+* Added ACE confidence interval with bootstrap
+* Added conditional independence tests
+* Added PC algorithm
 
 
 ## [0.0.3] - 2020-01-11
