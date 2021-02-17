@@ -1,4 +1,5 @@
 from typing import List, Set, Tuple
+from itertools import product
 
 from .backdoor_criterion import is_backdoor_adjustment_set
 from ..structure import CausalModel
@@ -6,13 +7,13 @@ from ..utils import _powerset, _as_set
 
 
 def is_frontdoor_adjustment_set(G: CausalModel, X: str, Y: str, Z: str = None) -> bool:
-    Z = _as_set(Z)
+    X, Y, Z = _as_set(X), _as_set(Y), _as_set(Z)
 
     # A set of variables Z is said to satisfy the front-door criterion
     # relative to an ordered pair of variables (X, Y) if:
 
     # (i) Z intercepts all directed paths from X to Y;
-    if not all(Z.intersection(path) for path in G.paths(X, Y)):
+    if not all(Z.intersection(pi) for (x, y) in product(X, Y) for pi in G.paths(x, y)):
         return False
 
     # (ii) there is no unblocked back-door path from X to Z; and
@@ -20,7 +21,7 @@ def is_frontdoor_adjustment_set(G: CausalModel, X: str, Y: str, Z: str = None) -
         return False
 
     # (iii) all back-door paths from Z to Y are blocked by X.
-    if not all(is_backdoor_adjustment_set(G, z, Y, X) for z in Z):
+    if not is_backdoor_adjustment_set(G, Z, Y, X):
         return False
 
     return True

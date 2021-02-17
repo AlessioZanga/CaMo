@@ -5,9 +5,7 @@ from ..utils import _powerset, _as_set
 
 
 def is_backdoor_adjustment_set(G: CausalModel, X: str, Y: str, Z: str = None) -> bool:
-    Z = _as_set(Z)
-
-    Z |= {X}
+    X, Y, Z = _as_set(X), _as_set(Y), _as_set(Z)
 
     # A set of variables Z satisfies the back-door criterion
     # relative to an ordered pair of variables (X, Y) if:
@@ -17,10 +15,7 @@ def is_backdoor_adjustment_set(G: CausalModel, X: str, Y: str, Z: str = None) ->
         return False
 
     # (ii) Z blocks every path between X and Y that contains an arrow into X.
-    if not all(G.is_d_separated(p, Y, Z) for p in G.parents(X)):
-        return False
-
-    return True
+    return G.is_d_separated(G.parents(X), Y, Z | X)
 
 
 def all_backdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[str]]:
