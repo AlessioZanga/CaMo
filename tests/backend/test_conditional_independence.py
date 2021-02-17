@@ -6,11 +6,11 @@ adult = camo.data.adult
 def test_conditional_independence():
 
     args = [
-        (("Age", "Immigrant"), False),
-        (("Age", "Race"), False),
-        (("Age", "Sex"), False),
+        (("Age", "Immigrant", None), False),
+        (("Age", "Race", None), False),
+        (("Age", "Sex", None), False),
         (("Education", "HoursPerWeek", ["Age", "Immigrant", "Race", "Sex"]), False),
-        (("Immigrant", "Sex"), True),
+        (("Immigrant", "Sex", None), True),
         (("Education", "MaritalStatus", ["Age", "Sex"]), False)
     ]
 
