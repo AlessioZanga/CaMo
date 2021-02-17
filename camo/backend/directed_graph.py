@@ -4,6 +4,8 @@ from typing import Iterable, Set, Tuple
 
 from .graph import Graph
 
+from ..utils import _as_set
+
 
 class DirectedGraph(Graph):
 
@@ -20,16 +22,32 @@ class DirectedGraph(Graph):
             self._G.add_edges_from(E)
 
     def ancestors(self, v: str) -> Set[str]:
-        return set(nx.ancestors(self._G, v))
+        return {
+            a
+            for u in _as_set(v)
+            for a in nx.ancestors(self._G, u)
+        }
 
     def parents(self, v: str) -> Set[str]:
-        return set(self._G.predecessors(v))
+        return {
+            p
+            for u in _as_set(v)
+            for p in self._G.predecessors(u)
+        }
 
     def children(self, v: str) -> Set[str]:
-        return set(self._G.successors(v))
+        return {
+            c
+            for u in _as_set(v)
+            for c in self._G.successors(u)
+        }
 
     def descendants(self, v: str) -> Set[str]:
-        return set(nx.descendants(self._G, v))
+        return {
+            d
+            for u in _as_set(v)
+            for d in nx.descendants(self._G, u)
+        }
 
     def to_undirected(self) -> Graph:
         G = Graph()

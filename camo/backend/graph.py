@@ -3,6 +3,8 @@ import networkx as nx
 
 from typing import Iterable, Set, Tuple
 
+from ..utils import _as_set
+
 
 class Graph:
 
@@ -46,7 +48,11 @@ class Graph:
         self._G.remove_edge(u, v)
 
     def neighbors(self, v: str) -> Set[str]:
-        return set(self._G.neighbors(v))
+        return {
+            n
+            for u in _as_set(v)
+            for n in self._G.neighbors(u)
+        }
 
     def subgraph(self, V: Set[str]):
         subgraph = self._G.subgraph(V)
