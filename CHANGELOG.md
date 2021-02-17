@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [0.0.5] - 2020-02-dd
+### Added
+* Added ICA-LiNGAM algorithm
+* Added Direct-LiNGAM algorithm
+* Added partial correlation implementation
+* Added t-Studend CI over partial correlation
+* Added z-Fisher CI over partial correlation
+
+### Changed
+* Graph and DirectGraph topological relationships implementation
+* Backdoor/Frontdoor criterion implementation
+* PC causal discovery implementation
+
+
 ## [0.0.4] - 2020-01-16
 ### Added
 * Added Back-door and Front-door paths discover function
