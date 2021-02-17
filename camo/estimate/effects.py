@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import trange
 
 from . import methods
-from ..utils import _to_categorical, _try_get
+from ..utils import _try_get
 
 methods = dict(getmembers(methods, isfunction))
 
@@ -19,21 +19,16 @@ def average_causal_effect(
     Z: str = None,
     method: str = "g_formula",
     estimator: str = "ols",
-    targets: Tuple[Any] = (0, 1),
     bootstrap: int = None,
     alpha: float = 0.05
 ) -> float:
+    # Check if treatment is binary
+    if len(data[X].unique()) != 2:
+        raise NotImplementedError("Only ACE for binary treatment is implemented.")
+
     # Try get value from methods
     if isinstance(method, str):
         method = _try_get(method, methods)
-
-    # Check if data is numeric
-    is_numeric = np.vectorize(lambda x: not np.issubdtype(x, np.number))
-    is_numeric = is_numeric(data.dtypes)
-    # Tranform not numeric columns and targets using one-hot encoding
-    if np.any(is_numeric):
-        data.iloc[:, is_numeric], encoders = _to_categorical(data.iloc[:, is_numeric])
-        targets = encoders[X].transform(targets) if X in encoders else targets
 
     # Estimate E[Y|do(X=0),Z] and E[Y|do(X=1),Z]
     effect_0, effect_1 = method(data, X, Y, Z, estimator)
@@ -56,8 +51,7 @@ def average_causal_effect(
                 sample,
                 X, Y, Z,
                 method,
-                estimator,
-                targets
+                estimator
             )
         # Compute upper and lower bounds over samples
         lower, upper = np.quantile(samples, q=[alpha/2, 1-alpha/2])
