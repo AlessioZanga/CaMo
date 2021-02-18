@@ -22,7 +22,7 @@ class Graph:
             self._G.add_edges_from(E)
 
     @property
-    def vertices(self) -> Set[str]:
+    def V(self) -> Set[str]:
         return set(self._G.nodes)
 
     def has_vertex(self, v: str) -> bool:
@@ -35,7 +35,7 @@ class Graph:
         self._G.remove_node(v)
 
     @property
-    def edges(self) -> Set[Tuple[str, str]]:
+    def E(self) -> Set[Tuple[str, str]]:
         return set(self._G.edges)
 
     def has_edge(self, u: str, v: str) -> bool:
@@ -77,4 +77,4 @@ class Graph:
         return G
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(V={self.vertices}, E={self.edges})"
+        return f"{self.__class__.__name__}(V={self.V}, E={self.E})"

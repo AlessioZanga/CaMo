@@ -10,13 +10,6 @@ from ..utils import _as_set
 
 class DirectedMarkovGraph(DirectedGraph):
 
-    def __init__(
-        self,
-        V: Iterable[str] = None,
-        E: Iterable[Tuple[str, str]] = None
-    ):
-        super().__init__(V, E)
-
     @property
     def probability_distribution(self) -> str:
         P = [
@@ -37,7 +30,7 @@ class DirectedMarkovGraph(DirectedGraph):
     @property
     def v_structures(self) -> Set[Tuple[str]]:
         v_structures = set()
-        for v in self.vertices:
+        for v in self.V:
             for (i, j) in combinations(self.parents(v), 2):
                 if not self.has_edge(i, j) and not self.has_edge(j, i):
                     v_structures.add((i, v, j))

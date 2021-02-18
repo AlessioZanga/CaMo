@@ -63,7 +63,7 @@ class PC:
     def transform(self, G: Graph):
         # TODO: Until a partially-directed graph class is implemented,
         # orient the graph by duplicating edges, one for each direction.
-        V = G.vertices
+        V = G.V
         C = DirectedGraph.from_undirected(G)
 
         # (C) For each triple of vertices X, Y, Z
