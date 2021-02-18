@@ -4,8 +4,9 @@ import pandas as pd
 from sympy import solve, stats
 from sympy.parsing.sympy_parser import parse_expr
 
-from ..backend import DirectedGraph, topological_sort
 from .causal_model import CausalModel
+from ..backend import DirectedGraph, topological_sort
+from ..utils import _as_set
 
 
 class StructuralCausalModel(CausalModel):
@@ -20,8 +21,7 @@ class StructuralCausalModel(CausalModel):
         F: Dict[str, Any] = None,
         P: Dict[str, Any] = None,
     ):
-        self._V = set(V) if V else set()
-        self._U = set(U) if U else set()
+        self._V, self._U = _as_set(V), _as_set(U)
 
         self._F = dict(F) if F else {v: None for v in self._V}
         self._P = dict(P) if P else {u: None for u in self._U}
@@ -37,11 +37,6 @@ class StructuralCausalModel(CausalModel):
         ]
 
         super().__init__(self._V, self._U, E)
-
-    def copy(self):
-        return StructuralCausalModel(
-            self._V, self._U, self._F, self._P
-        )
 
     def _parse_expr(self, expr: Dict[str, str]) -> Dict[str, Any]:
         out = {}
@@ -63,6 +58,19 @@ class StructuralCausalModel(CausalModel):
                 if atom.is_Symbol:
                     symbols[atom.name] = atom
         return out
+    
+    @property
+    def F(self) -> Dict[str, Any]:
+        raise NotImplementedError() # TODO
+
+    @property
+    def P(self) -> Dict[str, Any]:
+        raise NotImplementedError() # TODO
+
+    def copy(self):
+        return StructuralCausalModel(
+            self._V, self._U, self._F, self._P
+        )
 
     def do(self, **kwargs):
         # Check if v is endogenous
@@ -80,7 +88,7 @@ class StructuralCausalModel(CausalModel):
         return intervened
 
     def fit(self, data: pd.DataFrame):
-        raise NotImplementedError()  # TODO
+        raise NotImplementedError()
 
     def sample(self, size: int) -> pd.DataFrame:
         # Parse the symbolic expression of the system

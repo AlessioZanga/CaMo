@@ -1,9 +1,10 @@
-from abc import ABC, abstractmethod
-from typing import Any, Iterable, Set, Tuple
+from abc import ABC, abstractmethod, abstractproperty
+from typing import Any, Dict, Iterable, Set, Tuple
 
 import pandas as pd
 
 from ..backend import DirectedMarkovGraph
+from ..utils import _as_set
 
 
 class CausalModel(DirectedMarkovGraph, ABC):
@@ -17,8 +18,7 @@ class CausalModel(DirectedMarkovGraph, ABC):
         U: Iterable[str] = None,
         E: Iterable[Tuple[str]] = None,
     ):
-        self._V = set(V) if V else set()
-        self._U = set(U) if U else set()
+        self._V, self._U, E = _as_set(V), _as_set(U), _as_set(E)
 
         # Check if V and U are disjoint
         if self._V & self._U:
@@ -35,16 +35,24 @@ class CausalModel(DirectedMarkovGraph, ABC):
         super().__init__(self._V | self._U, E)
 
     @property
-    def causal_graph(self) -> Any:
-        raise NotImplementedError()  # TODO
-
-    @property
     def V(self) -> Set[str]:
         return set(self._V)
 
     @property
     def U(self) -> Set[str]:
         return set(self._U)
+
+    @abstractproperty
+    def F(self) -> Dict[str, Any]:
+        pass
+
+    @abstractproperty
+    def P(self) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def copy(self):
+        pass
 
     @abstractmethod
     def do(self, **kwargs):
