@@ -2,7 +2,7 @@ import camo
 import numpy as np
 
 
-data = camo.data.generated.estimate
+data = camo.data.estimate
 args = ("T", "CD4", ["Insurance", "ViralLoad", "Income", "Education"])
 
 
