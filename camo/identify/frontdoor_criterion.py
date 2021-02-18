@@ -30,7 +30,7 @@ def is_frontdoor_adjustment_set(G: CausalModel, X: str, Y: str, Z: str = None) -
 def all_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[str]]:
     X, Y = _as_set(X), _as_set(Y)
 
-    adjustment_variables = G.endogenous_variables - X - Y - G.descendants(X)
+    adjustment_variables = G.V - X - Y - G.descendants(X)
 
     adjustment_sets = [
         set(S)
@@ -47,7 +47,7 @@ def minimal_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Se
     if is_frontdoor_adjustment_set(G, X, Y):
         return [set()]
 
-    adjustment_variables = G.endogenous_variables - X - Y - G.descendants(X)
+    adjustment_variables = G.V - X - Y - G.descendants(X)
 
     adjustment_sets = []
     for S in _powerset(adjustment_variables):

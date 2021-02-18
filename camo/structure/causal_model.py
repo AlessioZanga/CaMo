@@ -39,11 +39,11 @@ class CausalModel(DirectedMarkovGraph, ABC):
         raise NotImplementedError()  # TODO
 
     @property
-    def endogenous_variables(self) -> Set[str]:
+    def V(self) -> Set[str]:
         return set(self._V)
 
     @property
-    def exogenous_variables(self) -> Set[str]:
+    def U(self) -> Set[str]:
         return set(self._U)
 
     @abstractmethod
