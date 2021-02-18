@@ -14,8 +14,17 @@ data = np.array([x0, x1, x2, x3])
 data = pd.DataFrame(data.T, columns=["x0", "x1", "x2", "x3"])
 
 
-def test_pc():
-    G = camo.discover.PC().fit_transform(data)
+def test_pc_t_student():
+    G = camo.discover.PC().fit_transform(data, method="t_student")
+
+    E = G.edges
+    assert ("x0", "x1") in E or ("x1", "x0") in E
+    assert ("x0", "x3") in E or ("x3", "x0") in E
+    assert ("x1", "x3") in E or ("x3", "x1") in E
+
+
+def test_pc_z_fisher():
+    G = camo.discover.PC().fit_transform(data, method="z_fisher")
 
     E = G.edges
     assert ("x0", "x1") in E or ("x1", "x0") in E

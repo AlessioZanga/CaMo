@@ -17,6 +17,8 @@ CONDITIONAL_INDEPENDENCE_TESTS = {
     "cressie_read": "cressie-read"
 }
 
+EPS = np.finfo(float).eps
+
 
 def _power_divergence(data: pd.DataFrame, X: str, Y: str, Z: Set[str], method: str = None):
     Z = list(_as_set(Z))
@@ -26,7 +28,7 @@ def _power_divergence(data: pd.DataFrame, X: str, Y: str, Z: Set[str], method: s
     # For each group compute the absolute frequency
     data = (d.groupby([X, Y]).size().unstack(Y, 0) for d in data)
     # Apply the selected contional indepependece test
-    data = (chi2_contingency(d, lambda_=method) for d in data)
+    data = (chi2_contingency(d + EPS, lambda_=method) for d in data)
     # Reduce results among groups by using column-wise sum,
     # discarding unnecessary results
     data = np.vstack([d[:3] for d in data]).sum(axis=0)
@@ -69,7 +71,7 @@ def t_student(data: pd.DataFrame, X: str, Y: str, Z: Set[str]):
     stat = partial_correlation(data, X, Y, Z)
 
     df = np.max(len(data) - len(Z) - 2, 0)
-    tran = np.sqrt(df) * np.abs(stat / np.sqrt(1 - np.square(stat)))
+    tran = np.sqrt(df) * np.abs(stat / (np.sqrt(1 - np.square(stat)) + EPS))
     p_value = 2 * (1 - t.cdf(tran, df))
 
     return stat, p_value, df
@@ -81,7 +83,7 @@ def z_fisher(data: pd.DataFrame, X: str, Y: str, Z: Set[str]):
     stat = partial_correlation(data, X, Y, Z)
 
     df = np.max(len(data) - len(Z) - 3, 0)
-    stat = np.sqrt(df) * np.abs(np.arctanh(stat))
+    stat = np.sqrt(df) * np.abs(np.arctanh(stat + EPS))
     p_value = 2 * (1 - norm.cdf(stat))
 
     return stat, p_value, df
