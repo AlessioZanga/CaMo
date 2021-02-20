@@ -59,33 +59,33 @@ class StructuralCausalModel(CausalModel):
                     symbols[atom.name] = atom
         return out
     
-    @property
-    def F(self) -> Dict[str, Any]:
-        raise NotImplementedError() # TODO
-
-    @property
-    def P(self) -> Dict[str, Any]:
-        raise NotImplementedError() # TODO
-
     def copy(self):
         return StructuralCausalModel(
             self._V, self._U, self._F, self._P
         )
+
+    @property
+    def F(self) -> Dict[str, Any]:
+        return self._F.copy()
+
+    @property
+    def P(self) -> Dict[str, Any]:
+        return self._P.copy()
 
     def do(self, **kwargs):
         # Check if v is endogenous
         if not (kwargs.keys() & self._V):
             raise ValueError()
         # Copy model
-        intervened = self.copy()
+        out = self.copy()
         # Set intervened variables
         for (v, k) in kwargs.items():
             # Fix v variable to constant k
-            intervened._F[v] = f"Eq(Symbol('{v}'), {k})"
+            out._F[v] = f"Eq(Symbol('{v}'), {k})"
             # Remove incoming edges
-            for u in intervened.parents(v):
-                intervened.del_edge(u, v)
-        return intervened
+            for u in out.parents(v):
+                out.del_edge(u, v)
+        return out
 
     def fit(self, data: pd.DataFrame):
         raise NotImplementedError()
@@ -110,7 +110,7 @@ class StructuralCausalModel(CausalModel):
     def from_structure(
         cls,
         V: Iterable[str],
-        E: Iterable[Tuple[str, str]],
+        E: Iterable[Tuple[str, str]]
     ):
         V, U = set(V), set()
 

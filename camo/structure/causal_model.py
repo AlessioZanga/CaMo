@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractclassmethod, abstractmethod, abstractproperty
 from typing import Any, Dict, Iterable, Set, Tuple
 
 import pandas as pd
@@ -33,6 +33,10 @@ class CausalModel(DirectedMarkovGraph, ABC):
                 self._U.add(v)
 
         super().__init__(self._V | self._U, E)
+    
+    @abstractmethod
+    def copy(self):
+        pass
 
     @property
     def V(self) -> Set[str]:
@@ -51,10 +55,6 @@ class CausalModel(DirectedMarkovGraph, ABC):
         pass
 
     @abstractmethod
-    def copy(self):
-        pass
-
-    @abstractmethod
     def do(self, **kwargs):
         pass
 
@@ -64,4 +64,12 @@ class CausalModel(DirectedMarkovGraph, ABC):
 
     @abstractmethod
     def sample(self, size: int) -> pd.DataFrame:
+        pass
+
+    @abstractclassmethod
+    def from_structure(
+        cls,
+        V: Iterable[str],
+        E: Iterable[Tuple[str, str]]
+    ):
         pass
