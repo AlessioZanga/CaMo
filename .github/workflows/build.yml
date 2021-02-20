@@ -31,8 +31,7 @@ jobs:
         pip install .
         pip install pytest-cov
         pytest --cov=camo tests/
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v1
+        bash <(curl -s https://codecov.io/bash)
     - name: Publish distribution to PyPI
       if: startsWith(github.ref, 'refs/heads/main')
       uses: pypa/gh-action-pypi-publish@master
