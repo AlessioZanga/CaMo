@@ -1,28 +1,23 @@
-import numpy as np
-import pandas as pd
-
 import camo
+import pandas as pd
+import pytest
 
 
-samples = 1000
-np.random.seed(31)
-x0 = np.random.uniform(size=samples)
-x1 = 2.0 * x0 + np.random.uniform(size=samples)
-x2 = np.random.uniform(size=samples)
-x3 = 4.0 * x1 + np.random.uniform(size=samples)
-data = np.array([x0, x1, x2, x3])
-data = pd.DataFrame(data.T, columns=["x0", "x1", "x2", "x3"])
+M = camo.LinearNonGaussianSCM(
+    V=["A", "B", "C", "D"],
+    Beta=[[0, 2, 0, 0], [0, 0, 0, 4], [0, 0, 0, 0], [0, 0, 0, 0]]
+)
+M = [(M.sample(1000, seed=31), M.Beta.T)]
 
 
-def test_ica_lingam():
-    B = camo.discover.ICALiNGAM().fit_transform(data)
+class TestLiNGAM:
 
-    assert B[1, 0] > 1.9
-    assert B[3, 1] > 3.9
+    @pytest.mark.parametrize("data, B", M)
+    def test_ica_lingam(self, data, B):
+        M = camo.ICALiNGAM().fit_transform(data, seed=13)
+        pd.testing.assert_frame_equal(M.Beta, B, check_dtype=False, atol=1e-1)
 
-
-def test_direct_lingam():
-    B = camo.discover.DirectLiNGAM().fit_transform(data)
-
-    assert B[1, 0] > 1.9
-    assert B[3, 1] > 3.9
+    @pytest.mark.parametrize("data, B", M)
+    def test_direct_lingam(self, data, B):
+        M = camo.DirectLiNGAM().fit_transform(data)
+        pd.testing.assert_frame_equal(M.Beta, B, check_dtype=False, atol=1e-1)

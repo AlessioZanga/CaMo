@@ -39,3 +39,6 @@ class DirectLiNGAM(ICALiNGAM):
         K[d-1] = U[0]
 
         return K
+
+    def fit_transform(self, data: pd.DataFrame):
+        return self.transform(data, self.fit(data))
