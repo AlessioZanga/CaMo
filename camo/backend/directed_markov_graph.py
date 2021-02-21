@@ -1,5 +1,5 @@
 from itertools import combinations
-from typing import Iterable, Set, Tuple
+from typing import Iterable, Optional, Set, Tuple
 
 import networkx as nx
 
@@ -49,7 +49,12 @@ class DirectedMarkovGraph(DirectedGraph):
     def is_collider(self, X: str, Y: str, Z: str) -> bool:
         return self.has_edge(X, Z) and self.has_edge(Y, Z)
 
-    def is_d_separated(self, X: Iterable[str], Y: Iterable[str], Z: Iterable[str] = None) -> bool:
+    def is_d_separated(
+        self,
+        X: Iterable[str],
+        Y: Iterable[str],
+        Z: Optional[Iterable[str]] = None
+        ) -> bool:
         X, Y, Z = _as_set(X), _as_set(Y), _as_set(Z)
 
         if X & Z or Y & Z:

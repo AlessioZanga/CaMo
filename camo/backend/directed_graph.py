@@ -1,6 +1,6 @@
 import networkx as nx
 
-from typing import Iterable, Set, Tuple
+from typing import Iterable, Optional, Set, Tuple
 
 from .graph import Graph
 
@@ -11,8 +11,8 @@ class DirectedGraph(Graph):
 
     def __init__(
         self,
-        V: Iterable[str] = None,
-        E: Iterable[Tuple[str, str]] = None
+        V: Optional[Iterable[str]] = None,
+        E: Optional[Iterable[Tuple[str, str]]] = None
     ):
         super().__init__()
         self._G = nx.DiGraph()

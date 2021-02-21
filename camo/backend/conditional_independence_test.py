@@ -1,6 +1,6 @@
 import sys
 from functools import partial
-from typing import Set
+from typing import Optional, Set
 
 import numpy as np
 import pandas as pd
@@ -20,7 +20,13 @@ CONDITIONAL_INDEPENDENCE_TESTS = {
 EPS = np.finfo(float).eps
 
 
-def _power_divergence(data: pd.DataFrame, X: str, Y: str, Z: Set[str], method: str = None):
+def _power_divergence(
+    data: pd.DataFrame,
+    X: str,
+    Y: str,
+    Z: Set[str],
+    method: Optional[str] = None
+    ):
     Z = list(_as_set(Z))
 
     # Group data by Z

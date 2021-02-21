@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from typing import Iterable, Set, Tuple
+from typing import Iterable, Optional, Set, Tuple
 
 from ..utils import _as_set
 
@@ -12,8 +12,8 @@ class Graph:
 
     def __init__(
         self,
-        V: Iterable[str] = None,
-        E: Iterable[Tuple[str, str]] = None
+        V: Optional[Iterable[str]] = None,
+        E: Optional[Iterable[Tuple[str, str]]] = None
     ):
         self._G = nx.Graph()
         if V:
