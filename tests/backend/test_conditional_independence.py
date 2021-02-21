@@ -1,23 +1,42 @@
 import camo
+import pytest
 
-adult = camo.data.adult
+
+ADULT = [
+    (camo.data.adult, "Age", "Immigrant", None, False),
+    (camo.data.adult, "Age", "Race", None, False),
+    (camo.data.adult, "Age", "Sex", None, False),
+    (camo.data.adult, "Education", "HoursPerWeek", ["Age", "Immigrant", "Race", "Sex"], False),
+    (camo.data.adult, "Immigrant", "Sex", None, True),
+    (camo.data.adult, "Education", "MaritalStatus", ["Age", "Sex"], False)
+]
 
 
-def test_conditional_independence():
+FIGURE_3_1 = camo.data.primer.figure_3_1
+FIGURE_3_1 = [
+    (FIGURE_3_1.sample(100, 31), X, Y, Z, FIGURE_3_1.is_d_separated(X, Y, Z))
+    for Z in camo.utils._powerset(FIGURE_3_1.V)
+    for X in FIGURE_3_1.V
+    for Y in FIGURE_3_1.V
+    if X != Y \
+    and X not in Z \
+    and Y not in Z
+]
 
-    args = [
-        (("Age", "Immigrant", None), False),
-        (("Age", "Race", None), False),
-        (("Age", "Sex", None), False),
-        (("Education", "HoursPerWeek", ["Age", "Immigrant", "Race", "Sex"]), False),
-        (("Immigrant", "Sex", None), True),
-        (("Education", "MaritalStatus", ["Age", "Sex"]), False)
-    ]
 
-    for ci in [
-        getattr(camo.backend, k)
-        for k in camo.backend.CONDITIONAL_INDEPENDENCE_TESTS.keys()
-    ]:
-        for arg in args:
-            _, p_value, _ = ci(adult, *arg[0])
-            assert (p_value > 0.05) == arg[1]
+class TestConditionalIndependnece:
+
+    @pytest.mark.parametrize("data, X, Y, Z, T", ADULT)
+    def test_chi_square(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.chi_square(data, X, Y, Z)
+        assert (p_value > 0.05) == T
+    
+    @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
+    def test_t_student(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.t_student(data, X, Y, Z)
+        assert (p_value > 0.05) == T
+    
+    @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
+    def test_z_fisher(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.z_fisher(data, X, Y, Z)
+        assert (p_value > 0.05) == T

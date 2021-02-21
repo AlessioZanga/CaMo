@@ -1,28 +1,36 @@
-from camo.data import primer
-from camo import is_backdoor_adjustment_set, all_backdoor_adjustment_sets
+import camo
+import pytest
 
 
-def test_backdoor_criterion_figure_3_6():
-    model = primer.figure_3_6
-    assert not is_backdoor_adjustment_set(model, "X", "Y", [])
-    assert is_backdoor_adjustment_set(model, "X", "Y", {"W"})
-    assert all_backdoor_adjustment_sets(model, "X", "Y") == [{"W"}]
+FIGURE_3_6 = camo.data.primer.figure_3_6
+FIGURE_3_7 = camo.data.primer.figure_3_7
+FIGURE_3_10_A = camo.data.primer.figure_3_10_a
+FIGURE_3_10_B = camo.data.primer.figure_3_10_b
 
-def test_backdoor_criterion_figure_3_7():
-    model = primer.figure_3_7
-    assert not is_backdoor_adjustment_set(model, "X", "Y", [])
+IS_BACKDOOR = [
+    (FIGURE_3_6, "X", "Y", None, False),
+    (FIGURE_3_6, "X", "Y", "W", True),
+    (FIGURE_3_7, "X", "Y", None, False),
+    (FIGURE_3_7, "X", "Y", {"A", "Z"}, True),
+    (FIGURE_3_7, "X", "Y", {"E", "Z"}, True),
+    (FIGURE_3_7, "X", "Y", {"A", "E", "Z"}, True),
+    (FIGURE_3_10_A, "Smoking", "LungCancer", None, False),
+    (FIGURE_3_10_B, "Smoking", "LungCancer", None, False),
+]
 
-    adjustment_sets = [
-        {"E", "Z"},
-        {"A", "Z"},
-        {"E", "Z", "A"}
-    ]
-    assert all(
-        is_backdoor_adjustment_set(model, "X", "Y", S)
-        for S in adjustment_sets
-    )
+ALL_BACKDOOR = [
+    (FIGURE_3_6, "X", "Y", [{"W"}]),
+    (FIGURE_3_10_A, "Smoking", "LungCancer", []),
+    (FIGURE_3_10_B, "Smoking", "LungCancer", []),
+]
 
-def test_backdoor_criterion_figure_3_10_a_b():
-    for model in [primer.figure_3_10_a, primer.figure_3_10_b]:
-        assert not is_backdoor_adjustment_set(model, "Smoking", "LungCancer")
-        assert all_backdoor_adjustment_sets(model, "Smoking", "LungCancer") == []
+
+class TestBackdoorCriterion:
+
+    @pytest.mark.parametrize("M, X, Y, Z, T", IS_BACKDOOR)
+    def test_is_backdoor_adjustment_set(self, M, X, Y, Z, T):
+        assert camo.is_backdoor_adjustment_set(M, X, Y, Z) == T
+
+    @pytest.mark.parametrize("M, X, Y, T", ALL_BACKDOOR)
+    def test_all_backdoor_adjustment_sets(self, M, X, Y, T):
+        assert camo.all_backdoor_adjustment_sets(M, X, Y) == T

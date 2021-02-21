@@ -1,54 +1,53 @@
-from camo.data import primer
+import camo
+import pytest
 
 
-def test_is_chain():
-    model = primer.figure_2_1
-    assert model.is_chain("X", "Y", "Z")
+FIGURE_2_1 = camo.data.primer.figure_2_1
+FIGURE_2_2 = camo.data.primer.figure_2_2
+FIGURE_2_3 = camo.data.primer.figure_2_3
+FIGURE_2_7 = camo.data.primer.figure_2_7
+FIGURE_2_8 = camo.data.primer.figure_2_8
 
-def test_is_fork():
-    model = primer.figure_2_2
-    assert model.is_fork("X", "Y", "Z")
+IS_CHAIN = [(FIGURE_2_1, "X", "Y", "Z", True)]
+IS_FORK = [(FIGURE_2_2, "X", "Y", "Z", True)]
+IS_COLLIDER = [(FIGURE_2_3, "X", "Y", "Z", True)]
 
-def test_is_collider():
-    model = primer.figure_2_3
-    assert model.is_collider("X", "Y", "Z")
+IS_D_SEPARATED = [
+    (FIGURE_2_7, "Y", "Z", None, True),
+    (FIGURE_2_7, "Y", "Z", "W", False),
+    (FIGURE_2_7, "Y", "Z", "U", False),
+    (FIGURE_2_7, "Y", "Z", {"W", "X"}, True),
+    (FIGURE_2_8, "Y", "Z", "W", False),
+    (FIGURE_2_8, "Y", "Z", "U", False),
+    (FIGURE_2_8, "Y", "Z", {"W", "U"}, False),
+    (FIGURE_2_8, "Y", "Z", {"W", "T"}, False),
+    (FIGURE_2_8, "Y", "Z", {"U", "T"}, False),
+    (FIGURE_2_8, "Y", "Z", {"W", "U", "T"}, False),
+    (FIGURE_2_8, "Y", "Z", {"W", "X"}, False),
+    (FIGURE_2_8, "Y", "Z", {"U", "X"}, False),
+    (FIGURE_2_8, "Y", "Z", {"W", "U", "X"}, False),
+    (FIGURE_2_8, "Y", "Z", "T", True),
+    (FIGURE_2_8, "Y", "Z", {"X", "T"}, True),
+    (FIGURE_2_8, "Y", "Z", {"W", "X", "T"}, True),
+    (FIGURE_2_8, "Y", "Z", {"U", "X", "T"}, True),
+    (FIGURE_2_8, "Y", "Z", {"W", "U", "X", "T"}, True),
+]
 
-def test_d_separation():
-    model = primer.figure_2_7
 
-    assert model.is_d_separated("Y", "Z")
-    assert not model.is_d_separated("Y", "Z", "W")
-    assert not model.is_d_separated("Y", "Z", "U")
-    assert model.is_d_separated("Y", "Z", {"W", "X"})
+class TestDirectedMarkovGraph:
 
-    model = primer.figure_2_8
+    @pytest.mark.parametrize("M, X, Y, Z, T", IS_CHAIN)
+    def test_is_chain(self, M, X, Y, Z, T):
+        assert M.is_chain(X, Y, Z) == T
 
-    dependent_sets = [
-        "W",
-        "U",
-        {"W", "U"},
-        {"W", "T"},
-        {"U", "T"},
-        {"W", "U", "T"},
-        {"W", "X"},
-        {"U", "X"}, 
-        {"W", "U", "X"}
-    ]
+    @pytest.mark.parametrize("M, X, Y, Z, T", IS_FORK)
+    def test_is_fork(self, M, X, Y, Z, T):
+        assert M.is_fork(X, Y, Z) == T
 
-    assert all([
-        not model.is_d_separated("Y", "Z", S)
-        for S in dependent_sets
-    ])
+    @pytest.mark.parametrize("M, X, Y, Z, T", IS_COLLIDER)
+    def test_is_collider(self, M, X, Y, Z, T):
+        assert M.is_collider(X, Y, Z) == T
 
-    independent_sets = [
-        "T",
-        {"X", "T"},
-        {"W", "X", "T"},
-        {"U", "X", "T"},
-        {"W", "U", "X", "T"}
-    ]
-
-    assert all([
-        model.is_d_separated("Y", "Z", S)
-        for S in independent_sets
-    ])
+    @pytest.mark.parametrize("M, X, Y, Z, T", IS_D_SEPARATED)
+    def test_is_dseparated(self, M, X, Y, Z, T):
+        assert M.is_d_separated(X, Y, Z) == T

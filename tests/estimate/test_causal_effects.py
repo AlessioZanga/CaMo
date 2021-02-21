@@ -1,16 +1,20 @@
 import camo
 import numpy as np
+import pytest
 
 
-data = camo.data.estimate
-args = ("T", "CD4", ["Insurance", "ViralLoad", "Income", "Education"])
+class TestAverageCausalEffect:
 
-
-def test_average_causal_effect_g_formula():
-    ace = camo.ACE(data, *args, method="g_formula", estimator="ols")
-    assert np.allclose(ace, 0.4968077996596586)
-
-
-def test_average_causal_effect_inverse_probability_weighting():
-    ace = camo.ACE(data, *args, method="ipw", estimator="logit")
-    assert np.allclose(ace, 0.4917151858666866)
+    @pytest.mark.parametrize("data, X, Y, Z, T", [
+        (camo.data.cd4, "T", "CD4", ["Insurance", "ViralLoad", "Income", "Education"], 0.4968077996596586)
+    ])
+    def test_g_formula(self, data, X, Y, Z, T):
+        ace = camo.ACE(data, X, Y, Z, method="g_formula", estimator="ols")
+        np.testing.assert_allclose(ace, T)
+    
+    @pytest.mark.parametrize("data, X, Y, Z, T", [
+        (camo.data.cd4, "T", "CD4", ["Insurance", "ViralLoad", "Income", "Education"], 0.4917151858666866)
+    ])
+    def test_ipw(self, data, X, Y, Z, T):
+        ace = camo.ACE(data, X, Y, Z, method="ipw", estimator="logit")
+        np.testing.assert_allclose(ace, T)

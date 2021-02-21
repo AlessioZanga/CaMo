@@ -1,11 +1,19 @@
-from camo.data import primer
-from camo import is_frontdoor_adjustment_set
+import camo
+import pytest
 
 
-def test_frontdoor_criterion_figure_3_10_a_b():
-    model = primer.figure_3_10_a
-    assert not is_frontdoor_adjustment_set(model, "Smoking", "LungCancer")
+FIGURE_3_10_A = camo.data.primer.figure_3_10_a
+FIGURE_3_10_B = camo.data.primer.figure_3_10_b
 
-    model = primer.figure_3_10_b
-    assert not is_frontdoor_adjustment_set(model, "Smoking", "LungCancer")
-    assert is_frontdoor_adjustment_set(model, "Smoking", "LungCancer", "TarDeposits")
+IS_FRONTDOOR = [
+    (FIGURE_3_10_A, "Smoking", "LungCancer", None, False),
+    (FIGURE_3_10_B, "Smoking", "LungCancer", None, False),
+    (FIGURE_3_10_B, "Smoking", "LungCancer", "TarDeposits", True),
+]
+
+
+class TestFrontdoorCriterion:
+
+    @pytest.mark.parametrize("M, X, Y, Z, T", IS_FRONTDOOR)
+    def test_is_frontdoor_adjustment_set(self, M, X, Y, Z, T):
+        assert camo.is_frontdoor_adjustment_set(M, X, Y, Z) == T
