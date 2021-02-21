@@ -58,11 +58,11 @@ class Graph:
         subgraph = self._G.subgraph(V)
         return type(self)(subgraph.nodes, subgraph.edges)
 
-    def has_path(self, u: str, v: str) -> bool:
-        return nx.has_path(self._G, u, v)
-
     def paths(self, u: str, v: str) -> Set[Tuple[str]]:
         return {tuple(p) for p in nx.all_simple_paths(self._G, u, v)}
+    
+    def has_path(self, u: str, v: str) -> bool:
+        return nx.has_path(self._G, u, v)
 
     def plot(self) -> None:
         sty = {"node_shape": ""}

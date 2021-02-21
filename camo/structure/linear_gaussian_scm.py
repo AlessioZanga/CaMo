@@ -25,32 +25,28 @@ class LinearGaussianSCM(CausalModel):
     ):
         # Build weighted adjacency matrix between endogenous variables
         self._Beta = pd.DataFrame(Beta, index=V, columns=V, copy=True)
-        # TODO: Generalize to cyclic models
-        np.fill_diagonal(self._Beta.values, 1)
 
         # Build weighted adjacency matrix between endogenous-exogenous variables
         self._Gamma = np.identity(len(self._Beta)) if Gamma is None else Gamma
-        self._Gamma = pd.DataFrame(
-            self._Gamma, columns=self._Beta.columns, copy=True)
+        self._Gamma = pd.DataFrame(self._Gamma, columns=self._Beta.columns, copy=True)
         self._Gamma.index = [
-            "$U_{" +
-            ''.join(self._Gamma.columns[self._Gamma.loc[i] != 0]) + "}$"
+            "$U_{" + ''.join(self._Gamma.columns[self._Gamma.loc[i] != 0]) + "}$"
             for i in self._Gamma.index
         ]
 
         # Build vector of noise variances
-        self._Sigma = np.ones((1, len(self._Gamma))
-                              ) if Sigma is None else Sigma
-        self._Sigma = pd.DataFrame(
-            self._Sigma, columns=self._Gamma.index, copy=True)
+        self._Sigma = np.ones((1, len(self._Gamma))) if Sigma is None else Sigma
+        self._Sigma = pd.DataFrame(self._Sigma, columns=self._Gamma.index, copy=True)
 
         # Initialize vector of interventions
-        self._Do = pd.DataFrame(
-            [[np.nan] * len(self._Beta)], columns=self._Beta.columns)
+        self._Do = pd.DataFrame([[np.nan] * len(self._Beta)], columns=self._Beta.columns)
 
         # Get edges from adjacency matrix
         E = self._Beta[self._Beta != 0].stack().index.tolist()
         E += self._Gamma[self._Gamma != 0].stack().index.tolist()
+        
+        # TODO: Generalize to cyclic models
+        np.fill_diagonal(self._Beta.values, 1)
 
         super().__init__(self._Beta.index, self._Gamma.index, E)
 
@@ -99,12 +95,9 @@ class LinearGaussianSCM(CausalModel):
         np.fill_diagonal(out._Beta.values, 1)
         return out
 
-    def fit(self, data: pd.DataFrame):
-        raise NotImplementedError()  # TODO
-
     def sample(self, size: int) -> pd.DataFrame:
         # Generate noise from normal distribution given sigma variance matrix
-        def samples(x): return np.random.normal(scale=np.sqrt(x), size=size)
+        samples = lambda x: np.random.normal(scale=np.sqrt(x), size=size)
         samples = self._Sigma.apply(samples)
         # Compute noise for each variable given gamma matrix
         samples = samples @ self._Gamma
@@ -121,4 +114,30 @@ class LinearGaussianSCM(CausalModel):
         V: Iterable[str],
         E: Iterable[Tuple[str, str]]
     ):
-        raise NotImplementedError() # TODO
+        V, U = list(V), set()
+
+        # Check if both vertices are in a vertex set
+        # else, add to exogenous variables
+        for (u, v) in E:
+            if u not in V:
+                U.add(u)
+            if v not in V:
+                U.add(v)
+
+        U = list(U)
+
+        Beta = np.zeros((len(V), len(V)))
+        Beta = pd.DataFrame(Beta, index=V, columns=V)
+        for (u, v) in E:
+            if u in V and v in V:
+                Beta.loc[u, v] = 1
+
+        Gamma = None
+        if U:
+            Gamma = np.zeros((len(U), len(V)))
+            Gamma = pd.DataFrame(Gamma, index=U, columns=V)
+            for (u, v) in E:
+                if u in U and v in V:
+                    Gamma.loc[u, v] = 1
+
+        return cls(V, Beta, Gamma)

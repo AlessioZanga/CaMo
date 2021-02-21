@@ -87,9 +87,6 @@ class StructuralCausalModel(CausalModel):
                 out.del_edge(u, v)
         return out
 
-    def fit(self, data: pd.DataFrame):
-        raise NotImplementedError()
-
     def sample(self, size: int) -> pd.DataFrame:
         # Parse the symbolic expression of the system
         system = self._parse_expr(dict(self._P, **self._F))

@@ -59,10 +59,6 @@ class CausalModel(DirectedMarkovGraph, ABC):
         pass
 
     @abstractmethod
-    def fit(self, data: pd.DataFrame):
-        pass
-
-    @abstractmethod
     def sample(self, size: int) -> pd.DataFrame:
         pass
 

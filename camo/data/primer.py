@@ -1,4 +1,4 @@
-from ..structure import SCM
+from ..structure import LinearGaussianSCM
 
 # TODO: figure_1_7_a = None
 # TODO: figure_1_7_b = None
@@ -6,7 +6,7 @@ from ..structure import SCM
 # TODO: figure_1_9 = None
 # TODO: figure_1_10 = None
 
-figure_2_1 = SCM.from_structure(
+figure_2_1 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z"},
     E={
         ("$U_X$", "X"),
@@ -17,7 +17,7 @@ figure_2_1 = SCM.from_structure(
     }
 )
 
-figure_2_2 = SCM.from_structure(
+figure_2_2 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z"},
     E={
         ("$U_X$", "X"),
@@ -28,7 +28,7 @@ figure_2_2 = SCM.from_structure(
     }
 )
 
-figure_2_3 = SCM.from_structure(
+figure_2_3 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z"},
     E={
         ("$U_X$", "X"),
@@ -43,7 +43,7 @@ figure_2_3 = SCM.from_structure(
 # TODO: figure_2_5 = None
 # TODO: figure_2_6 = None
 
-figure_2_7 = SCM.from_structure(
+figure_2_7 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z", "W", "U"},
     E={
         ("$U_X$", "X"),
@@ -58,7 +58,7 @@ figure_2_7 = SCM.from_structure(
     }
 )
 
-figure_2_8 = SCM.from_structure(
+figure_2_8 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z", "W", "U", "T"},
     E={
         ("$U_X$", "X"),
@@ -78,7 +78,7 @@ figure_2_8 = SCM.from_structure(
 
 # TODO: figure_2_9 = None
 
-figure_3_1 = SCM.from_structure(
+figure_3_1 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z"},
     E={
         ("$U_X$", "X"),
@@ -89,7 +89,7 @@ figure_3_1 = SCM.from_structure(
     }
 )
 
-figure_3_2 = SCM.from_structure(
+figure_3_2 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "Z"},
     E={
         ("$U_Y$", "Y"),
@@ -102,7 +102,7 @@ figure_3_2 = SCM.from_structure(
 # TODO: figure_3_4 = None
 # TODO: figure_3_5 = None
 
-figure_3_6 = SCM.from_structure(
+figure_3_6 = LinearGaussianSCM.from_structure(
     V={"X", "Y", "W"},
     E={
         ("Z", "X"),
@@ -112,7 +112,7 @@ figure_3_6 = SCM.from_structure(
     }
 )
 
-figure_3_7 = SCM.from_structure(
+figure_3_7 = LinearGaussianSCM.from_structure(
     V={"A", "E", "X", "Y", "Z"},
     E={
         ("A", "Y"),
@@ -127,7 +127,7 @@ figure_3_7 = SCM.from_structure(
 
 # TODO: figure_3_8 = None
 
-figure_3_10_a = SCM.from_structure(
+figure_3_10_a = LinearGaussianSCM.from_structure(
     V={"Smoking", "LungCancer"},
     E={
         ("Genotype", "Smoking"),
@@ -136,7 +136,7 @@ figure_3_10_a = SCM.from_structure(
     }
 )
 
-figure_3_10_b = SCM.from_structure(
+figure_3_10_b = LinearGaussianSCM.from_structure(
     V={"Smoking", "LungCancer", "TarDeposits"},
     E={
         ("Genotype", "Smoking"),
