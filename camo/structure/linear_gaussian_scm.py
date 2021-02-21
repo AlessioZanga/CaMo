@@ -95,7 +95,9 @@ class LinearGaussianSCM(CausalModel):
         np.fill_diagonal(out._Beta.values, 1)
         return out
 
-    def sample(self, size: int) -> pd.DataFrame:
+    def sample(self, size: int, seed: int = None) -> pd.DataFrame:
+        # Set random seed
+        np.random.seed(seed)
         # Generate noise from normal distribution given sigma variance matrix
         samples = lambda x: np.random.normal(scale=np.sqrt(x), size=size)
         samples = self._Sigma.apply(samples)

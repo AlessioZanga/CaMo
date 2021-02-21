@@ -1,5 +1,6 @@
 from typing import Any, Dict, Iterable, Tuple
 
+import numpy as np
 import pandas as pd
 from sympy import solve, stats
 from sympy.parsing.sympy_parser import parse_expr
@@ -87,7 +88,9 @@ class StructuralCausalModel(CausalModel):
                 out.del_edge(u, v)
         return out
 
-    def sample(self, size: int) -> pd.DataFrame:
+    def sample(self, size: int, seed: int = None) -> pd.DataFrame:
+        # Set random seed
+        np.random.seed(seed)
         # Parse the symbolic expression of the system
         system = self._parse_expr(dict(self._P, **self._F))
         # Pre-compute solving order
