@@ -4,7 +4,7 @@ from typing import Dict, Iterable, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import networkx as nx
+import pygraphviz as pg
 
 from .graph import Graph
 
@@ -64,18 +64,21 @@ class EndpointGraph(Graph):
 
     def plot(self) -> None:
         styles = {
-            Endpoints.ALL: "diamond",
+            Endpoints.ALL: "odiamond",
             Endpoints.TAIL: "none",
             Endpoints.HEAD: "normal",
-            Endpoints.CIRCLE: "dot",
+            Endpoints.CIRCLE: "odot",
         }
         path = NamedTemporaryFile(suffix=".png").name
-        G = nx.nx_agraph.to_agraph(self._G).to_directed()
-        G.graph_attr["concentrate"] = True
+        G = pg.AGraph(directed=True)
+        G.graph_attr["dpi"] = 900
+        for v in self._G.nodes:
+            G.add_node(v, shape="none")
+        for (u, v) in self._G.edges:
+            s = styles[self._endpoints[(u, v)]]
+            t = styles[self._endpoints[(v, u)]]
+            G.add_edge(u, v, arrowhead=s, arrowtail=t, dir="both")
         G.layout(prog="dot")
-        for ((u, v), s) in self._endpoints.items():
-            e = G.get_edge(u, v)
-            e.attr["arrowhead"] = styles[s]     # pylint: disable=no-member
         G.draw(path)
         _ = plt.imshow(mpimg.imread(path))
         plt.axis("off")

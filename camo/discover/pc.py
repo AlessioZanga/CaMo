@@ -69,55 +69,56 @@ class PC:
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
     ):
+        V = sorted(G.V)
         C = EndpointGraph(G.V, G.E)
 
         # (Phase I - S2) For each triple of vertices X, Y, Z
-        for (X, Y, Z) in permutations(G.V, 3):
+        for (X, Y, Z) in permutations(V, 3):
             # such that the pair X, Y and the pair Y, Z are each adjacent in C
             # but the pair X, Z are not adjacent in C,
-            if C.has_edge(X, Y) and C.has_edge(Y, Z) and not C.has_edge(X, Z):
+            if C.has_undirected_edge(X, Y) and C.has_undirected_edge(Y, Z) and not C.has_edge(X, Z):
                 # orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X,Z).
                 if {Y} not in self._sepset[(X, Z)]:
                     C.set_endpoint(X, Y, Endpoints.HEAD)
                     C.set_endpoint(Z, Y, Endpoints.HEAD)
 
         # (Phase II') Apply Meek Rules until graph is closed.
-        def _R1(G: Graph) -> bool:
+        def _R1() -> bool:
             is_closed = True
             # MEEK RULE R1: If X -> Y, Y and Z are adjacent, X and Z are not adjacent,
             # and there is no arrowhead at Y, then orient Y - Z as Y -> Z.
-            for (X, Y, Z) in permutations(G.V, 3):
-                if G.has_directed_edge(X, Y) and G.has_undirected_edge(Y, Z) and not G.has_edge(X, Z):
-                    G.set_endpoint(Y, Z, Endpoints.HEAD)
+            for (X, Y, Z) in permutations(V, 3):
+                if C.has_directed_edge(X, Y) and C.has_undirected_edge(Y, Z) and not C.has_edge(X, Z):
+                    C.set_endpoint(Y, Z, Endpoints.HEAD)
                     is_closed = False
             return is_closed
 
-        def _R2(G: Graph) -> bool:
+        def _R2() -> bool:
             is_closed = True
             # MEEK RULE R2: If X -> Y, Y -> Z, X and Z are adjacent,
             # and there is no arrowhead at Z, then orient X - Z as X -> Z.
-            for (X, Y, Z) in permutations(G.V, 3):
-                if G.has_directed_edge(X, Y) and G.has_directed_edge(Y, Z) and G.has_undirected_edge(X, Z):
-                    G.set_endpoint(Y, Z, Endpoints.HEAD)
+            for (X, Y, Z) in permutations(V, 3):
+                if C.has_directed_edge(X, Y) and C.has_directed_edge(Y, Z) and C.has_undirected_edge(X, Z):
+                    C.set_endpoint(X, Z, Endpoints.HEAD)
                     is_closed = False
             return is_closed
 
-        def _R3(G: Graph) -> bool:
+        def _R3() -> bool:
             is_closed = True
             # MEEK RULE R3: If X - Y, Y - Z, Y - W, X -> W
             # and Z -> W, then orient Y - W as Y -> W.
-            for (X, Y, Z, W) in permutations(G.V, 4):
+            for (X, Y, Z, W) in permutations(V, 4):
                 if C.has_undirected_edge(X, Y) and C.has_undirected_edge(Y, Z) and C.has_undirected_edge(Y, W) \
                         and C.has_directed_edge(X, W) and C.has_directed_edge(Z, W):
                     C.set_endpoint(Y, W, Endpoints.HEAD)
                     is_closed = False
             return is_closed
 
-        def _R4(G: Graph) -> bool:
+        def _R4() -> bool:
             is_closed = True
             # MEEK RULE R4: If X - Y, Y - Z, (Y - W or Y -> W or W -> Y), W -> X
             # and Z -> W, then orient X - Y as Y -> X.
-            for (X, Y, Z, W) in permutations(G.V, 4):
+            for (X, Y, Z, W) in permutations(V, 4):
                 if C.has_undirected_edge(X, Y) and C.has_undirected_edge(Y, Z) and C.has_edge(Y, W) \
                         and C.has_directed_edge(W, X) and C.has_directed_edge(Z, W):
                     C.set_endpoint(Y, X, Endpoints.HEAD)
@@ -127,11 +128,8 @@ class PC:
         # Close graph w.r.t. to Meek rules except R4.
         is_closed = False
         while not is_closed:
-            is_closed = True  # (****)
-            is_closed &= _R1(C)
-            is_closed &= _R2(C)
-            is_closed &= _R3(C)
-            # until [****] no more edges can be oriented.
+            is_closed = _R1() & _R2() & _R3() # (****)
+        # until [****] no more edges can be oriented.
 
         # (Phase II'')
         # Check if graph is consistent with blacklist.
@@ -149,10 +147,6 @@ class PC:
                 C.set_endpoint(X, Y, Endpoints.HEAD)
                 is_closed = False
                 while not is_closed:
-                    is_closed = True
-                    is_closed &= _R1(C)
-                    is_closed &= _R2(C)
-                    is_closed &= _R3(C)
-                    is_closed &= _R4(C)
+                    is_closed = _R1() & _R2() & _R3() & _R4()
 
         return C
