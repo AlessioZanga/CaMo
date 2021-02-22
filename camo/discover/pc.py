@@ -69,11 +69,10 @@ class PC:
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
     ):
-        V = G.V
         C = EndpointGraph(G.V, G.E)
 
         # (Phase I - S2) For each triple of vertices X, Y, Z
-        for (X, Y, Z) in permutations(V, 3):
+        for (X, Y, Z) in permutations(G.V, 3):
             # such that the pair X, Y and the pair Y, Z are each adjacent in C
             # but the pair X, Z are not adjacent in C,
             if C.has_edge(X, Y) and C.has_edge(Y, Z) and not C.has_edge(X, Z):
