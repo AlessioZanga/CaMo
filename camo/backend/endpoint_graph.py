@@ -4,7 +4,6 @@ from typing import Dict, Iterable, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import pygraphviz as pg
 
 from .graph import Graph
 
@@ -63,6 +62,7 @@ class EndpointGraph(Graph):
             and not self.has_endpoint(v, u, Endpoints.HEAD)
 
     def plot(self) -> None:
+        import pygraphviz
         styles = {
             Endpoints.ALL: "odiamond",
             Endpoints.TAIL: "none",
@@ -70,7 +70,7 @@ class EndpointGraph(Graph):
             Endpoints.CIRCLE: "odot",
         }
         path = NamedTemporaryFile(suffix=".png").name
-        G = pg.AGraph(directed=True)
+        G = pygraphviz.AGraph(directed=True)
         G.graph_attr["dpi"] = 900
         for v in self._G.nodes:
             G.add_node(v, shape="none")

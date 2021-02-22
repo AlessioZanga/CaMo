@@ -1,5 +1,4 @@
 matplotlib
-pygraphviz
 networkx>=2.5
 numpy
 pandas
