@@ -30,7 +30,7 @@ jobs:
       run: |
         pip install .
         pip install pytest-cov
-        pytest --cov-report=xml --cov=. tests/
+        pytest --cov-report=xml --cov=.
         bash <(curl -s https://codecov.io/bash)
     - name: Publish distribution to PyPI
       if: startsWith(github.ref, 'refs/heads/main')
