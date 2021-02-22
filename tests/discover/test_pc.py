@@ -16,5 +16,5 @@ class TestPC:
 
     @pytest.mark.parametrize("data, method, T", M)
     def test_skeleton(self, data, method, T):
-        G = camo.PC().fit(data, method)
+        G = camo.PC(method=method).fit(data)
         assert len(G.E) == len(T) and all(G.has_edge(*e) for e in T)
