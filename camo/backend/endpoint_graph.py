@@ -1,5 +1,10 @@
 from enum import IntEnum
+from tempfile import NamedTemporaryFile
 from typing import Dict, Iterable, Optional, Tuple
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import networkx as nx
 
 from .graph import Graph
 
@@ -56,3 +61,22 @@ class EndpointGraph(Graph):
         return self.has_edge(u, v) \
             and self.has_endpoint(u, v, Endpoints.HEAD) \
             and not self.has_endpoint(v, u, Endpoints.HEAD)
+
+    def plot(self) -> None:
+        styles = {
+            Endpoints.ALL: "diamond",
+            Endpoints.TAIL: "none",
+            Endpoints.HEAD: "normal",
+            Endpoints.CIRCLE: "dot",
+        }
+        path = NamedTemporaryFile(suffix=".png").name
+        G = nx.nx_agraph.to_agraph(self._G).to_directed()
+        G.graph_attr["concentrate"] = True
+        G.layout(prog="dot")
+        for ((u, v), s) in self._endpoints.items():
+            e = G.get_edge(u, v)
+            e.attr["arrowhead"] = styles[s]     # pylint: disable=no-member
+        G.draw(path)
+        _ = plt.imshow(mpimg.imread(path))
+        plt.axis("off")
+        plt.show()
