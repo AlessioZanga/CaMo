@@ -23,7 +23,7 @@ class PC:
 
     def fit(self, data: pd.DataFrame):
         # (Phase I - S1) Form the complete undirected graph C on the vertex set V.
-        V = set(data.columns)
+        V = sorted(set(data.columns))
         C = Graph.from_complete(V)
 
         # Let Adjacencies(C,A) be the set of vertices adjacent to A in graph C.
