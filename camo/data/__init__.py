@@ -1,11 +1,10 @@
-from . import primer
-
+import sys
 from os import listdir
 from os.path import dirname, join, sep
-import sys
 
 import pandas as pd
 
+from . import primer
 
 for file in listdir(dirname(__file__)):
     if file.endswith(".gz"):

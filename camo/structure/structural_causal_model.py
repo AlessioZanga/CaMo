@@ -59,7 +59,7 @@ class StructuralCausalModel(CausalModel):
                 if atom.is_Symbol:
                     symbols[atom.name] = atom
         return out
-    
+
     def copy(self):
         return StructuralCausalModel(
             self._V, self._U, self._F, self._P

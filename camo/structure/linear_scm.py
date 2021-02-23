@@ -39,19 +39,19 @@ class LinearSCM(CausalModel):
         E += self._Gamma[self._Gamma != 0].stack().index.tolist()
 
         super().__init__(self._Beta.index, self._Gamma.index, E)
-    
+
     def add_vertex(self, v: str) -> None:
-        raise NotImplementedError() # FIXME:
+        raise NotImplementedError()  # FIXME:
 
     def del_vertex(self, v: str) -> None:
-        raise NotImplementedError() # FIXME:
+        raise NotImplementedError()  # FIXME:
 
     def add_edge(self, u: str, v: str) -> None:
-        raise NotImplementedError() # FIXME:
+        raise NotImplementedError()  # FIXME:
 
     def del_edge(self, u: str, v: str) -> None:
-        raise NotImplementedError() # FIXME:
-    
+        raise NotImplementedError()  # FIXME:
+
     def copy(self):
         return type(self)(self._Beta.index, self._Beta, self._Gamma)
 

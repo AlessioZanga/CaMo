@@ -1,10 +1,9 @@
-from itertools import permutations
-from typing import Dict, Optional, Iterable, Set, Tuple
+from typing import Set
 
 import pandas as pd
 
 from .ci import CI
-from ..backend import Endpoints, PartialAncestralGraph, Graph
+from ..backend import PartialAncestralGraph
 from ..utils import _powerset
 
 
@@ -21,7 +20,7 @@ class FCI(CI):
         def _pos_d_sep(X: str, Y: str) -> Set[str]:
             pds = set()
             for Z in C.V:
-                if Z != X and Z != Y:
+                if Z not in (X, Y):
                     for p in C.paths(X, Z):
                         if all(
                             C.is_collider(S, W, T) \
@@ -32,7 +31,7 @@ class FCI(CI):
             return pds
 
         for (X, Y) in C.E:
-            for S in _powerset(_pos_d_sep(X, Y) | _pos_d_sep(Y, X)):
+            for S in _powerset((_pos_d_sep(X, Y) | _pos_d_sep(Y, X))):
                 _, p_value, _ = self._method(data, X, Y, S)
                 if p_value > self._alpha:
                     C.del_edge(X, Y)

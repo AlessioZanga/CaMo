@@ -1,11 +1,10 @@
 from functools import partial
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, Optional
 
 import numpy as np
 import pandas as pd
 
 from .linear_scm import LinearSCM
-from ..utils import _as_set
 
 
 class LinearGaussianSCM(LinearSCM):

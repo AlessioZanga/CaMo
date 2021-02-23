@@ -68,11 +68,11 @@ class ICALiNGAM:
                 # i. Determine whether B' can be permuted to become strictly lower triangular.
                 # If this is possible, stop and return the permuted B'.
                 K, A, L = np.zeros(d, int), np.arange(d), B
-                while len(A):
+                while len(A) > 0:
                     # Find a row where all elements are zero, if any.
                     j = np.where(np.sum(np.abs(L), axis=1) == 0)
                     # If there is no row with zero elements, exit.
-                    if not len(j[0]):
+                    if len(j[0]) == 0:
                         K = None
                         break
                     # Select the first row with zero elements.

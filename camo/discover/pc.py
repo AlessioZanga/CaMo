@@ -9,7 +9,8 @@ import pandas as pd
 from ..backend import Endpoints, PartialAncestralGraph, Graph, conditional_independence_test as ci
 from ..utils import _try_get
 
-methods = dict(getmembers(ci, lambda x: isfunction(x) or isinstance(x, partial)))
+methods = dict(getmembers(ci, lambda x: isfunction(x)
+                          or isinstance(x, partial)))
 
 
 class PC:
@@ -63,7 +64,7 @@ class PC:
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
     ):
         return self.transform(self.fit(data), blacklist, whitelist)
-    
+
     def _R0(self, G: Graph, V: List[str]) -> bool:
         is_closed = True
         for (X, Y, Z) in permutations(V, 3):
@@ -76,7 +77,7 @@ class PC:
                     G.set_endpoint(Z, Y, Endpoints.HEAD)
                     is_closed = False
         return is_closed
-    
+
     def _R1(self, G: Graph, V: List[str]) -> bool:
         is_closed = True
         # MEEK RULE R1: If X -> Y, Y and Z are adjacent, X and Z are not adjacent,
@@ -135,8 +136,8 @@ class PC:
         is_closed = False
         while not is_closed:
             is_closed = self._R1(C, V) \
-                and self._R2(C, V) \
-                and self._R3(C, V) # (****)
+            and self._R2(C, V) \
+            and self._R3(C, V)  # (****)
         # until [****] no more edges can be oriented.
 
         # (Phase II'')
@@ -158,6 +159,6 @@ class PC:
                     is_closed = self._R1(C, V) \
                         and self._R2(C, V) \
                         and self._R3(C, V) \
-                        and self._R4(C, V) # (****)
+                        and self._R4(C, V)  # (****)
 
         return C

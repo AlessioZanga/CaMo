@@ -54,20 +54,20 @@ class PartialAncestralGraph(Graph):
 
     def unset_endpoint(self, u: str, v: str) -> None:
         del self._endpoints[(u, v)]
-    
+
     def is_any_circle(self, u: str, v: str) -> bool:
         return self.has_endpoint(u, v, Endpoints.CIRCLE)
 
     def is_any_head(self, u: str, v: str) -> bool:
         return self.has_endpoint(u, v, Endpoints.HEAD)
-    
+
     def is_any_tail(self, u: str, v: str) -> bool:
         return self.has_endpoint(u, v, Endpoints.TAIL)
-    
+
     def is_tail_head(self, u: str, v: str) -> bool:
         return self.has_endpoint(v, u, Endpoints.TAIL) \
             and self.has_endpoint(u, v, Endpoints.HEAD)
-    
+
     def is_tail_tail(self, u: str, v: str) -> bool:
         return self.has_endpoint(v, u, Endpoints.TAIL) \
             and self.has_endpoint(u, v, Endpoints.TAIL)
@@ -77,22 +77,22 @@ class PartialAncestralGraph(Graph):
             if all(self.is_tail_head(x, y) for (x, y) in zip(p, p[1:])):
                 return True
         return False
-    
+
     def is_collider(self, u: str, v: str, w: str) -> bool:
         return self.has_endpoint(u, v, Endpoints.HEAD) \
             and self.has_endpoint(w, v, Endpoints.HEAD)
-    
+
     def set_definite_non_collider(self, u: str, v: str, w: str) -> None:
         self._non_collider[(u, w)].add(v)
         self._non_collider[(w, u)].add(v)
-    
+
     def unset_definite_non_collider(self, u: str, v: str, w: str) -> None:
         self._non_collider[(u, w)].remove(v)
         self._non_collider[(w, u)].remove(v)
-    
+
     def clear_definite_non_collider(self) -> None:
         self._non_collider.clear()
-    
+
     def is_definite_non_collider(self, u: str, v: str, w: str) -> bool:
         return self.is_any_tail(u, w) or self.is_any_tail(w, v) \
             or v in self._non_collider[(u, w)] or v in self._non_collider[(w, u)]

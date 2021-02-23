@@ -1,9 +1,8 @@
-import networkx as nx
-
 from typing import Iterable, Optional, Set, Tuple
 
-from .graph import Graph
+import networkx as nx
 
+from .graph import Graph
 from ..utils import _as_set
 
 
@@ -57,7 +56,7 @@ class DirectedGraph(Graph):
         G._G = self._G.to_undirected()
         return G
 
-    @classmethod    
+    @classmethod
     def from_undirected(cls, other: Graph):
         G = cls()
         G._G = other._G.to_directed()

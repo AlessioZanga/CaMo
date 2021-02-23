@@ -1,14 +1,11 @@
-from itertools import combinations, permutations
-from typing import Dict, List, Optional, Iterable, Tuple
+from itertools import permutations
+from typing import List, Optional, Iterable, Tuple
 
 from .pc import PC
 from ..backend import Endpoints, PartialAncestralGraph, Graph
 
 
 class CI(PC):
-
-    def __init__(self, method: str = "t_student", alpha: float = 0.05):
-        super().__init__(method, alpha)
 
     def _R0(self, G: PartialAncestralGraph, V: List[str]) -> bool:
         is_closed = True

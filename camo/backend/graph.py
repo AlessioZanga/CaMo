@@ -1,7 +1,7 @@
+from typing import Iterable, Optional, Set, Tuple
+
 import matplotlib.pyplot as plt
 import networkx as nx
-
-from typing import Iterable, Optional, Set, Tuple
 
 from ..utils import _as_set
 
@@ -60,7 +60,7 @@ class Graph:
 
     def paths(self, u: str, v: str) -> Set[Tuple[str]]:
         return {tuple(p) for p in nx.all_simple_paths(self._G, u, v)}
-    
+
     def has_path(self, u: str, v: str) -> bool:
         return nx.has_path(self._G, u, v)
 
@@ -73,7 +73,7 @@ class Graph:
         plt.draw()
         plt.show()
         plt.close()
-    
+
     @classmethod
     def from_complete(cls, V: Set[str]):
         G = cls()
