@@ -64,11 +64,15 @@ class Graph:
     def has_path(self, u: str, v: str) -> bool:
         return nx.has_path(self._G, u, v)
 
-    def plot(self) -> None:
+    def plot(self, figsize: Tuple[float, float] = None) -> None:
         sty = {"node_shape": ""}
         pos = nx.nx_agraph.pygraphviz_layout(self._G, prog="dot")
+        figsize = figsize if figsize else (5, 5)
+        plt.figure(figsize=figsize)
         nx.draw(self._G, pos, with_labels=True, **sty)
+        plt.draw()
         plt.show()
+        plt.close()
     
     @classmethod
     def from_complete(cls, V: Set[str]):
