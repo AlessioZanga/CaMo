@@ -133,9 +133,9 @@ class PartialAncestralGraph(Graph):
         }
         path = NamedTemporaryFile(suffix=".png").name
         G = pygraphviz.AGraph(directed=True)
-        figsize = figsize if figsize else (5, 5)
-        G.graph_attr["size"] = f"{figsize[0]},{figsize[1]}"
-        G.graph_attr["dpi"] = 900
+        figsize = figsize if figsize else (7, 7)
+        G.graph_attr["fizedsize"] = True
+        G.graph_attr["size"] = f"{figsize[0]},{figsize[1]}!"
         for v in self._G.nodes:
             G.add_node(v, shape="none")
         for (u, v) in self._G.edges:
