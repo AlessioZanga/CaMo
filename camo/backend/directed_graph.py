@@ -49,6 +49,9 @@ class DirectedGraph(Graph):
             for d in nx.descendants(self._G, u)
         }
 
+    def is_acyclic(self) -> bool:
+        return nx.is_directed_acyclic_graph(self._G)
+
     def to_undirected(self) -> Graph:
         G = Graph()
         G._G = self._G.to_undirected()
