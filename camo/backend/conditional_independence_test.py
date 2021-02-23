@@ -9,7 +9,7 @@ from scipy.stats import chi2, chi2_contingency, norm, t
 from ..utils import _as_set
 
 CONDITIONAL_INDEPENDENCE_TESTS = {
-    "chi_square": "pearson",
+    "chi_squared": "pearson",
     "g_test": "log-likelihood",
     "modified_log_likelihood": "mod-log-likelihood",
     "freeman_tukey": "freeman-tukey",
