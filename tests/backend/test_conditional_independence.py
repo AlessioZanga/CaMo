@@ -28,7 +28,7 @@ class TestConditionalIndependnece:
 
     @pytest.mark.parametrize("data, X, Y, Z, T", ADULT)
     def test_chi_square(self, data, X, Y, Z, T):
-        _, p_value, _ = camo.backend.chi_square(data, X, Y, Z)
+        _, p_value, _ = camo.backend.chi_squared(data, X, Y, Z)
         assert (p_value > 0.05) == T
     
     @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
