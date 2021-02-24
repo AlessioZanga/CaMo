@@ -28,6 +28,6 @@ class LinearNonGaussianSCM(LinearSCM):
         samples[mask] = self._Do[mask].values
         # Compute variables given noise given beta matrix
         I = np.identity(len(self._Beta))
-        samples = np.linalg.solve((self._Beta - I).T, samples.T)
+        samples = np.linalg.solve((self._Beta + I).T, samples.T)
         samples = pd.DataFrame(samples.T, columns=self._Beta.columns)
         return samples

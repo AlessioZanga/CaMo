@@ -16,12 +16,12 @@ N = camo.LinearGaussianSCM.from_structure(
 
 FIT = []
 for method in ["t_student", "z_fisher"]:
-    FIT.append((M.sample(1000, seed=31), method, {("A", "B"), ("A", "D"), ("B", "D")}))
-    FIT.append((N.sample(10000, seed=31), method, {("A", "B"), ("B", "C"), ("B", "D"), ("C", "E"), ("D", "E")}))
+    FIT.append((M.sample(1000, seed=31), method, {("A", "B"), ("B", "D")}))
+    FIT.append((N.sample(1000, seed=31), method, {("A", "B"), ("B", "C"), ("B", "D"), ("C", "E"), ("D", "E")}))
 
 FIT_TRANSFORM = []
 for method in ["t_student", "z_fisher"]:
-    FIT_TRANSFORM.append((M.sample(100, seed=31), method, None, [("A", "B")], [("A", "B"), ("B", "D")]))
+    FIT_TRANSFORM.append((M.sample(1000, seed=31), method, None, [("A", "B")], [("A", "B"), ("B", "D")]))
 
 
 class TestPC:
