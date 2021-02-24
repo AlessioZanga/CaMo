@@ -58,7 +58,7 @@ def partial_correlation(data: pd.DataFrame, X: str, Y: str, Z: Set[str]):
     data = data[[X] + [Y] + Z]
     data = (data - data.mean(axis=0)) / data.std(axis=0)
 
-    if not len(Z):
+    if len(Z) == 0:
         res_X, res_Y = [data[v].to_numpy() for v in (X, Y)]
     else:
         X, Y, Z = [data[v].to_numpy() for v in (X, Y, Z)]
