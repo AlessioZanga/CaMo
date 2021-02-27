@@ -28,7 +28,11 @@ class TestPartialAncestralGraph:
 
     @pytest.mark.parametrize("E, EP, DDP, T", DDPs)
     def test_definite_discriminating_path(self, E, EP, DDP, T):
-        M = camo.PartialAncestralGraph(E=E)
+        M = camo.PAG(E=E)
         for ep in EP:
             M.set_endpoint(*ep)
-        assert M.all_definite_discriminating_paths(*DDP) == T
+        ddp = [
+            p for p in M.paths(DDP[0], DDP[2])
+            if M.is_discriminating_path(p, DDP[1])
+        ]
+        assert ddp == T

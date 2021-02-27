@@ -71,57 +71,47 @@ class PartialAncestralGraph(Graph):
     def is_tail_tail(self, u: str, v: str) -> bool:
         return self.has_endpoint(v, u, Endpoints.TAIL) \
             and self.has_endpoint(u, v, Endpoints.TAIL)
-
-    def has_directed_path(self, u: str, v: str) -> bool:
-        for p in self.paths(u, v):
-            if all(self.is_tail_head(x, y) for (x, y) in zip(p, p[1:])):
-                return True
-        return False
+    
+    def is_directed_path(self, p: Tuple[str]) -> bool:
+        return all(self.is_tail_head(u, v) for (u, v) in zip(p, p[1:]))
 
     def is_collider(self, u: str, v: str, w: str) -> bool:
         return self.has_endpoint(u, v, Endpoints.HEAD) \
             and self.has_endpoint(w, v, Endpoints.HEAD)
 
-    def set_definite_non_collider(self, u: str, v: str, w: str) -> None:
+    def is_non_collider(self, u: str, v: str, w: str) -> bool:
+        return self.is_any_tail(u, v) or self.is_any_tail(w, v) \
+            or v in self._non_collider[(u, w)] or v in self._non_collider[(w, u)]
+
+    def set_non_collider(self, u: str, v: str, w: str) -> None:
         self._non_collider[(u, w)].add(v)
         self._non_collider[(w, u)].add(v)
 
-    def unset_definite_non_collider(self, u: str, v: str, w: str) -> None:
+    def unset_non_collider(self, u: str, v: str, w: str) -> None:
         self._non_collider[(u, w)].remove(v)
         self._non_collider[(w, u)].remove(v)
 
-    def clear_definite_non_collider(self) -> None:
-        self._non_collider.clear()
-
-    def is_definite_non_collider(self, u: str, v: str, w: str) -> bool:
-        return self.is_any_tail(u, w) or self.is_any_tail(w, v) \
-            or v in self._non_collider[(u, w)] or v in self._non_collider[(w, u)]
-
-    def all_definite_discriminating_paths(self, u: str, v: str, w: str):
-        ddp = []
-        for p in self.paths(u, w):
-            # (iii)
-            if p[-2] == v:
-                l = p.index(v)
-                if not self.has_edge(u, w) \
-                and all(    # (iv) and (o)
-                    self.is_collider(x, y, z) \
-                    or self.is_definite_non_collider(x, y, z)
-                    for (x, y, z) in zip(p, p[1:], p[2:])
-                    if y != v
-                ) \
-                and all(    # (i)
-                    self.is_any_head(x, y)
-                    for (x, y) in zip(p[:l], p[1:l])
-                ) \
-                and all(    # (ii)
-                    (self.is_collider(x, y, z) \
-                    and self.is_tail_head(y, w)) \
-                    or self.is_any_head(w, y)
-                    for (x, y, z) in zip(p[:l], p[1:l], p[2:l])
-                ):
-                    ddp.append(p)
-        return ddp
+    def is_discriminating_path(self, p: Tuple[str], v: str):
+        u, w = p[0], p[-1]
+        if p[-2] == v and not self.has_edge(u, w) \
+        and all(    # (iii), (iv) and (o)
+            self.is_collider(x, y, z) \
+            or self.is_non_collider(x, y, z)
+            for (x, y, z) in zip(p, p[1:], p[2:])
+            if y != v
+        ) \
+        and all(    # (i)
+            self.is_any_head(x, y)
+            for (x, y) in zip(p[:-1], p[1:-1])
+        ) \
+        and all(    # (ii)
+            (self.is_collider(x, y, z) \
+            and self.is_tail_head(y, w)) \
+            or self.is_any_head(w, y)
+            for (x, y, z) in zip(p[:-1], p[1:-1], p[2:-1])
+        ):
+            return True
+        return False
 
     def plot(self, figsize: Tuple[float, float] = None) -> None:
         import pygraphviz
