@@ -62,7 +62,7 @@ class PC:
     ):
         return self.transform(self.fit(data), blacklist, whitelist)
 
-    def _R0(self, G: Graph) -> bool:
+    def _R0(self, G: PAG) -> bool:
         is_closed = True
         for (X, Y, Z) in permutations(G.V, 3):
             # such that the pair X, Y and the pair Y, Z are each adjacent in G
@@ -77,7 +77,7 @@ class PC:
                     is_closed = False
         return is_closed
 
-    def _R1(self, G: Graph) -> bool:
+    def _R1(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R1: If X -> Y, Y and Z are adjacent, X and Z are not adjacent,
         # and there is no arrowhead at Y, then orient Y - Z as Y -> Z.
@@ -89,7 +89,7 @@ class PC:
                 is_closed = False
         return is_closed
 
-    def _R2(self, G: Graph) -> bool:
+    def _R2(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R2: If X -> Y, Y -> Z, X and Z are adjacent,
         # and there is no arrowhead at Z, then orient X - Z as X -> Z.
@@ -101,7 +101,7 @@ class PC:
                 is_closed = False
         return is_closed
 
-    def _R3(self, G: Graph) -> bool:
+    def _R3(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R3: If X - Y, Y - Z, Y - W, X -> W
         # and Z -> W, then orient Y - W as Y -> W.
@@ -115,7 +115,7 @@ class PC:
                 is_closed = False
         return is_closed
 
-    def _R4(self, G: Graph) -> bool:
+    def _R4(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R4: If X - Y, Y - Z, (Y - W or Y -> W or W -> Y), W -> X
         # and Z -> W, then orient X - Y as Y -> X.
