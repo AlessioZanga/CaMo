@@ -3,6 +3,8 @@ from enum import IntEnum
 from tempfile import NamedTemporaryFile
 from typing import Dict, Iterable, Optional, Set, Tuple
 
+import pandas as pd
+
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
@@ -65,23 +67,27 @@ class PartialAncestralGraph(Graph):
         return self.has_endpoint(u, v, Endpoints.TAIL)
 
     def is_tail_head(self, u: str, v: str) -> bool:
-        return self.has_endpoint(v, u, Endpoints.TAIL) \
-            and self.has_endpoint(u, v, Endpoints.HEAD)
+        return \
+            self.has_endpoint(v, u, Endpoints.TAIL) and \
+            self.has_endpoint(u, v, Endpoints.HEAD)
 
     def is_tail_tail(self, u: str, v: str) -> bool:
-        return self.has_endpoint(v, u, Endpoints.TAIL) \
-            and self.has_endpoint(u, v, Endpoints.TAIL)
-    
+        return \
+            self.has_endpoint(v, u, Endpoints.TAIL) and \
+            self.has_endpoint(u, v, Endpoints.TAIL)
+
     def is_directed_path(self, p: Tuple[str]) -> bool:
-        return all(self.is_tail_head(u, v) for (u, v) in zip(p, p[1:]))
+        return all(self.is_any_head(u, v) for (u, v) in zip(p, p[1:]))
 
     def is_collider(self, u: str, v: str, w: str) -> bool:
-        return self.has_endpoint(u, v, Endpoints.HEAD) \
-            and self.has_endpoint(w, v, Endpoints.HEAD)
+        return self.is_any_head(u, v) and self.is_any_head(w, v)
 
     def is_non_collider(self, u: str, v: str, w: str) -> bool:
-        return self.is_any_tail(u, v) or self.is_any_tail(w, v) \
-            or v in self._non_collider[(u, w)] or v in self._non_collider[(w, u)]
+        return \
+            self.is_any_tail(u, v) or \
+            self.is_any_tail(w, v) or \
+            v in self._non_collider[(u, w)] or \
+            v in self._non_collider[(w, u)]
 
     def set_non_collider(self, u: str, v: str, w: str) -> None:
         self._non_collider[(u, w)].add(v)
@@ -93,25 +99,40 @@ class PartialAncestralGraph(Graph):
 
     def is_discriminating_path(self, p: Tuple[str], v: str):
         u, w = p[0], p[-1]
-        if p[-2] == v and not self.has_edge(u, w) \
-        and all(    # (iii), (iv) and (o)
-            self.is_collider(x, y, z) \
-            or self.is_non_collider(x, y, z)
+        if p[-2] == v and \
+        not self.has_edge(u, w) and \
+        all(    # (iii), (iv) and (o)
+            self.is_collider(x, y, z) or \
+            self.is_non_collider(x, y, z)
             for (x, y, z) in zip(p, p[1:], p[2:])
             if y != v
-        ) \
-        and all(    # (i)
+        ) and \
+        all(    # (i)
             self.is_any_head(x, y)
-            for (x, y) in zip(p[:-1], p[1:-1])
-        ) \
-        and all(    # (ii)
-            (self.is_collider(x, y, z) \
-            and self.is_tail_head(y, w)) \
-            or self.is_any_head(w, y)
-            for (x, y, z) in zip(p[:-1], p[1:-1], p[2:-1])
+            for (x, y) in zip(p, p[1:])
+            if x != v
+        ) and \
+        all(    # (ii)
+            (self.is_collider(x, y, z) and \
+            self.is_tail_head(y, w)) or \
+            self.is_any_head(w, y)
+            for (x, y, z) in zip(p, p[1:], p[2:])
+            if y != v
         ):
             return True
         return False
+
+    def to_adjacency_matrix(self) -> pd.DataFrame:
+        V = sorted(self.V)
+        out = pd.DataFrame(0, columns=V, index=V)
+        mapping = {
+            Endpoints.CIRCLE: 1,
+            Endpoints.HEAD: 2,
+            Endpoints.TAIL: 3
+        }
+        for (u, v), k in self._endpoints.items():
+            out.at[u, v] = mapping[k]
+        return out
 
     def plot(self, figsize: Tuple[float, float] = None) -> None:
         import pygraphviz
@@ -124,7 +145,7 @@ class PartialAncestralGraph(Graph):
         path = NamedTemporaryFile(suffix=".png").name
         G = pygraphviz.AGraph(directed=True)
         figsize = figsize if figsize else (7, 7)
-        G.graph_attr["fizedsize"] = True
+        G.graph_attr["fixedsize"] = True
         G.graph_attr["size"] = f"{figsize[0]},{figsize[1]}!"
         for v in self._G.nodes:
             G.add_node(v, shape="none")
