@@ -1,10 +1,9 @@
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
 from .causal_model import CausalModel
-from ..utils import _as_set
 
 
 class LinearSCM(CausalModel):

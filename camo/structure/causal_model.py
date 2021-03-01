@@ -33,7 +33,7 @@ class CausalModel(DirectedMarkovGraph, ABC):
                 self._U.add(v)
 
         super().__init__(self._V | self._U, E)
-    
+
     @abstractmethod
     def copy(self):
         pass
