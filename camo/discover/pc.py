@@ -7,7 +7,7 @@ from typing import Dict, Optional, Iterable, Set, Tuple
 import pandas as pd
 
 from ..backend import Endpoints, PAG, Graph, conditional_independence_test as ci
-from ..utils import _try_get
+from ..utils import _as_set, _try_get
 
 methods = dict(getmembers(ci, lambda x: isfunction(x) or isinstance(x, partial)))
 
@@ -129,6 +129,39 @@ class PC:
                 is_closed = False
         return is_closed
 
+    def _KB(
+        self,
+        G: PAG,
+        blacklist: Optional[Iterable[Tuple[str, str]]] = None,
+        whitelist: Optional[Iterable[Tuple[str, str]]] = None,
+        endpoint: int = Endpoints.TAIL
+    ):
+        B, W = _as_set(blacklist), _as_set(whitelist)
+        if B:
+            for (X, Y) in B:
+                if G.has_edge(X, Y):
+                    if (Y, X) not in blacklist:
+                        # If only one direction is blacklisted, orient edge.
+                        G.set_endpoint(X, Y, Endpoints.TAIL)
+                        G.set_endpoint(Y, X, Endpoints.HEAD)
+                    else:
+                        # Else if both directions are blacklisted, delete edge.
+                        G.del_edge(X, Y)
+                        B.remove((Y, X))
+        if W:
+            for (X, Y) in W:
+                if not G.has_edge(X, Y):
+                    # Add edge if not present
+                    G.add_edge(X, Y, endpoint)
+                if (Y, X) not in W:
+                    # If only one direction is blacklisted, orient edge.
+                    G.set_endpoint(X, Y, Endpoints.HEAD)
+                    G.set_endpoint(Y, X, Endpoints.TAIL)
+                else:
+                    # Else if both directions are whitelisted, do nothing.
+                    W.remove((Y, X))
+        # Orient edges in whitelist and black list and close graph w.r.t. to Meek rules.
+
     def transform(
         self,
         G: Graph,
@@ -137,40 +170,20 @@ class PC:
     ):
         G = PAG(G.V, G.E)
 
+        # Apply knowledge base (blacklist, whitelist)
+        self._KB(G, blacklist, whitelist)
+
         # (Phase I - S2) For each triple of vertices X, Y, Z
         self._R0(G)
 
-        # (Phase II') Close graph w.r.t. to Meek rules except R4.
+        # (Phase II') Close graph w.r.t. to Meek rules.
         is_closed = False
         while not is_closed:
             is_closed = True
             is_closed &= self._R1(G)
             is_closed &= self._R2(G)
             is_closed &= self._R3(G)
+            is_closed &= self._R4(G)
         # until no more edges can be oriented.
-
-        # (Phase II'')
-        # Check if graph is consistent with blacklist.
-        if blacklist:
-            for (X, Y) in blacklist:
-                if G.is_tail_head(X, Y):
-                    raise ValueError(
-                        f"Graph contains forbidden edge ({X}->{Y}).")
-        if whitelist:
-            # Check if graph is consistent with whitelist.
-            for (X, Y) in whitelist:
-                if not G.has_edge(X, Y) or G.is_tail_head(Y, X):
-                    raise ValueError(
-                        f"Graph does not contain required edge ({X}->{Y}).")
-            # Orient edges in whitelist and close graph w.r.t. to Meek rules.
-            for (X, Y) in whitelist:
-                G.set_endpoint(X, Y, Endpoints.HEAD)
-                is_closed = False
-                while not is_closed:
-                    is_closed = True
-                    is_closed &= self._R1(G)
-                    is_closed &= self._R2(G)
-                    is_closed &= self._R3(G)
-                    is_closed &= self._R4(G)
 
         return G

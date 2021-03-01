@@ -75,6 +75,8 @@ class CI(PC):
     ):
         G = PAG(G.V, G.E, Endpoints.CIRCLE)
 
+        self._KB(G, blacklist, whitelist, Endpoints.CIRCLE)
+
         self._R0(G)
 
         is_closed = False
