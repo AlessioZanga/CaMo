@@ -99,7 +99,7 @@ class PartialAncestralGraph(Graph):
 
     def is_discriminating_path(self, p: Tuple[str], v: str):
         u, w = p[0], p[-1]
-        if p[-2] == v and \
+        if p[-2] == v and len(p) > 3 and \
         not self.has_edge(u, w) and \
         all(    # (iii), (iv) and (o)
             self.is_collider(x, y, z) or \
