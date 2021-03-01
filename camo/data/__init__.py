@@ -5,6 +5,7 @@ from os.path import dirname, join, sep
 import pandas as pd
 
 from . import primer
+from . import sprites
 
 for file in listdir(dirname(__file__)):
     if file.endswith(".gz"):
