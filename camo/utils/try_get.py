@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 def _try_get(key: str, collection: Dict[str, Any]) -> Any:
     if not isinstance(key, str):
-        return key 
+        return key
     try:
         value = collection[key]
     except KeyError:

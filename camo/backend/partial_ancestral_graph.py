@@ -21,7 +21,6 @@ class Endpoints(IntEnum):
 class PartialAncestralGraph(Graph):
 
     _endpoints: Dict[Tuple[str, str], int]
-    _non_collider: Dict[Tuple[str, str], Set[str]]
 
     def __init__(
         self,
@@ -49,7 +48,7 @@ class PartialAncestralGraph(Graph):
         self.unset_endpoint(v, u)
 
     def has_endpoint(self, u: str, v: str, endpoint: int) -> bool:
-        return self._endpoints.get((u, v), None) == endpoint
+        return self._endpoints[(u, v)] == endpoint
 
     def set_endpoint(self, u: str, v: str, endpoint: int) -> None:
         self._endpoints[(u, v)] = endpoint
@@ -82,45 +81,22 @@ class PartialAncestralGraph(Graph):
     def is_collider(self, u: str, v: str, w: str) -> bool:
         return self.is_any_head(u, v) and self.is_any_head(w, v)
 
-    def is_non_collider(self, u: str, v: str, w: str) -> bool:
-        return \
-            self.is_any_tail(u, v) or \
-            self.is_any_tail(w, v) or \
-            v in self._non_collider[(u, w)] or \
-            v in self._non_collider[(w, u)]
-
-    def set_non_collider(self, u: str, v: str, w: str) -> None:
-        self._non_collider[(u, w)].add(v)
-        self._non_collider[(w, u)].add(v)
-
-    def unset_non_collider(self, u: str, v: str, w: str) -> None:
-        self._non_collider[(u, w)].remove(v)
-        self._non_collider[(w, u)].remove(v)
-
-    def is_discriminating_path(self, p: Tuple[str], v: str):
-        u, w = p[0], p[-1]
-        if p[-2] == v and len(p) > 3 and \
-        not self.has_edge(u, w) and \
-        all(    # (iii), (iv) and (o)
-            self.is_collider(x, y, z) or \
-            self.is_non_collider(x, y, z)
-            for (x, y, z) in zip(p, p[1:], p[2:])
-            if y != v
-        ) and \
-        all(    # (i)
-            self.is_any_head(x, y)
-            for (x, y) in zip(p, p[1:])
-            if x != v
-        ) and \
-        all(    # (ii)
-            (self.is_collider(x, y, z) and \
-            self.is_tail_head(y, w)) or \
-            self.is_any_head(w, y)
-            for (x, y, z) in zip(p, p[1:], p[2:])
-            if y != v
-        ):
-            return True
-        return False
+    def is_discriminating_path(self, p: Tuple[str], Y: str):
+        if len(p) < 4:  # (i)
+            return False
+        if Y != p[-2]:  # (ii)
+            return False
+        X, Z = p[0], p[-1]
+        if self.has_edge(X, Z): # (iii.a)
+            return False
+        if any(
+            not (self.is_collider(P, Q, R) and \
+            self.has_edge(Q, Z) and \
+            self.is_tail_head(Q, Z))
+            for (P, Q, R) in zip(p[:-1], p[1:-1], p[2:-1])
+        ):  # (iii.b)
+            return False
+        return True
 
     def to_adjacency_matrix(self) -> pd.DataFrame:
         V = sorted(self.V)

@@ -16,15 +16,14 @@ class PC:
 
     _alpha: float
     _method: Callable
-    _sepset: Dict[Tuple[str], Set[str]]
+    _dsep: Dict[Tuple[str, str], Set[str]]
 
     def __init__(self, method: str = "t_student", alpha: float = 0.05):
         self._alpha = alpha
         self._method = _try_get(method, methods)
-        self._sepset = defaultdict(set)
+        self._dsep = defaultdict(set)
 
     def fit(self, data: pd.DataFrame):
-        self._sepset.clear()
         # (Phase I - S1) Form the complete undirected graph G on the vertex set V.
         G = Graph.from_complete(data.columns)
 
@@ -44,8 +43,8 @@ class PC:
                     if p_value > self._alpha:
                         G.del_edge(X, Y)
                         # and record S in Sepset(X,Y) and Sepset(Y,X);
-                        self._sepset[(X, Y)].add(frozenset(S))
-                        self._sepset[(Y, X)].add(frozenset(S))
+                        self._dsep[(X, Y)] = set(S)
+                        self._dsep[(Y, X)] = set(S)
                         break
             # until [*] all ordered pairs of adjacent variables X and Y such that
             # Adjacencies(G,X)\{Y} has cardinality greater than or equal to n and
@@ -67,69 +66,77 @@ class PC:
 
     def _R0(self, G: PAG) -> bool:
         is_closed = True
-        for (X, Y, Z) in permutations(G.V, 3):
-            # such that the pair X, Y and the pair Y, Z are each adjacent in G
-            # but the pair X, Z are not adjacent in G,
-            if (G.is_tail_tail(X, Y) and
-                G.is_tail_tail(Y, Z) and
-                not G.has_edge(X, Z)):
-                # orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X,Z).
-                if {Y} not in self._sepset[(X, Z)]:
-                    G.set_endpoint(X, Y, Endpoints.HEAD)
-                    G.set_endpoint(Z, Y, Endpoints.HEAD)
-                    is_closed = False
+        for Y in G.V:
+            for (X, Z) in combinations(G.neighbors(Y) - {Y}, 2):
+                # such that the pair X, Y and the pair Y, Z are each adjacent in G
+                # but the pair X, Z are not adjacent in G,
+                if (G.is_tail_tail(X, Y) and
+                    G.is_tail_tail(Y, Z) and
+                    not G.has_edge(X, Z)):
+                    # orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X,Z).
+                    if Y not in self._dsep[(X, Z)]:
+                        G.set_endpoint(X, Y, Endpoints.HEAD)
+                        G.set_endpoint(Z, Y, Endpoints.HEAD)
+                        is_closed = False
         return is_closed
 
     def _R1(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R1: If X -> Y, Y and Z are adjacent, X and Z are not adjacent,
         # and there is no arrowhead at Y, then orient Y - Z as Y -> Z.
-        for (X, Y, Z) in permutations(G.V, 3):
-            if (G.is_tail_head(X, Y) and
-                G.is_tail_tail(Y, Z) and
-                not G.has_edge(X, Z)):
-                G.set_endpoint(Y, Z, Endpoints.HEAD)
-                is_closed = False
+        for Y in G.V:
+            for (X, Z) in permutations(G.neighbors(Y), 2):
+                if (G.is_tail_head(X, Y) and
+                    G.is_tail_tail(Y, Z) and
+                    not G.has_edge(X, Z)):
+                    G.set_endpoint(Y, Z, Endpoints.HEAD)
+                    is_closed = False
         return is_closed
 
     def _R2(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R2: If X -> Y, Y -> Z, X and Z are adjacent,
         # and there is no arrowhead at Z, then orient X - Z as X -> Z.
-        for (X, Y, Z) in permutations(G.V, 3):
-            if (G.is_tail_head(X, Y) and
-                G.is_tail_head(Y, Z) and
-                G.is_tail_tail(X, Z)):
-                G.set_endpoint(X, Z, Endpoints.HEAD)
-                is_closed = False
+        for Y in G.V:
+            for X in G.neighbors(Y):
+                for Z in G.neighbors(Y) & G.neighbors(X):
+                    if (G.is_tail_head(X, Y) and
+                        G.is_tail_head(Y, Z) and
+                        G.is_tail_tail(X, Z)):
+                        G.set_endpoint(X, Z, Endpoints.HEAD)
+                        is_closed = False
         return is_closed
 
     def _R3(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R3: If X - Y, Y - Z, Y - W, X -> W
         # and Z -> W, then orient Y - W as Y -> W.
-        for (X, Y, Z, W) in permutations(G.V, 4):
-            if (G.is_tail_tail(X, Y) and
-                G.is_tail_tail(Y, Z) and
-                G.is_tail_tail(Y, W) and
-                G.is_tail_head(X, W) and
-                G.is_tail_head(Z, W)):
-                G.set_endpoint(Y, W, Endpoints.HEAD)
-                is_closed = False
+        for Y in G.V:
+            for (X, Z) in permutations(G.neighbors(Y), 2):
+                for W in G.neighbors(Y) - {X, Z}:
+                    if (G.is_tail_tail(X, Y) and
+                        G.is_tail_tail(Y, Z) and
+                        G.is_tail_tail(Y, W) and
+                        G.is_tail_head(X, W) and
+                        G.is_tail_head(Z, W)):
+                        G.set_endpoint(Y, W, Endpoints.HEAD)
+                        is_closed = False
         return is_closed
 
     def _R4(self, G: PAG) -> bool:
         is_closed = True
         # MEEK RULE R4: If X - Y, Y - Z, (Y - W or Y -> W or W -> Y), W -> X
         # and Z -> W, then orient X - Y as Y -> X.
-        for (X, Y, Z, W) in permutations(G.V, 4):
-            if (G.is_tail_tail(X, Y) and
-                G.is_tail_tail(Y, Z) and
-                G.is_tail_head(W, X) and
-                G.is_tail_head(Z, W) and
-                G.has_edge(Y, W)):
-                G.set_endpoint(Y, X, Endpoints.HEAD)
-                is_closed = False
+        for Y in G.V:
+            for (X, Z) in permutations(G.neighbors(Y), 2):
+                for W in G.neighbors(Y) - {X, Z}:
+                    if (G.is_tail_tail(X, Y) and
+                        G.is_tail_tail(Y, Z) and
+                        G.is_tail_head(W, X) and
+                        G.is_tail_head(Z, W) and
+                        G.has_edge(Y, W)):
+                        G.set_endpoint(Y, X, Endpoints.HEAD)
+                        is_closed = False
         return is_closed
 
     def _KB(

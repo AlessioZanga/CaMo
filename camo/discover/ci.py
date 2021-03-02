@@ -1,4 +1,4 @@
-from itertools import permutations
+from itertools import combinations, permutations
 from typing import Optional, Iterable, Tuple
 
 from .pc import PC
@@ -9,62 +9,75 @@ class CI(PC):
 
     def _R0(self, G: PAG) -> bool:
         is_closed = True
-        for (X, Y, Z) in permutations(G.V, 3):
-            if (G.is_any_circle(X, Y) and
-                G.is_any_circle(Z, Y) and
-                not G.has_edge(X, Z)):
-                if {Y} not in self._sepset[(X, Z)]:
-                    G.set_endpoint(X, Y, Endpoints.HEAD)
-                    G.set_endpoint(Z, Y, Endpoints.HEAD)
-                else:
-                    G.set_non_collider(X, Y, Z)
-                is_closed = False
+        for Y in G.V:
+            for (X, Z) in combinations(G.neighbors(Y) - {Y}, 2):
+                if (G.is_any_circle(X, Y) and
+                    G.is_any_circle(Z, Y) and
+                    not G.has_edge(X, Z)):
+                    if Y not in self._dsep[(X, Z)]:
+                        G.set_endpoint(X, Y, Endpoints.HEAD)
+                        G.set_endpoint(Z, Y, Endpoints.HEAD)
+                        is_closed = False
         return is_closed
 
     def _R1(self, G: PAG) -> bool:
         is_closed = True
-        for (X, Y) in permutations(G.V, 2):
-            for p in G.paths(X, Y):
-                if (G.is_any_circle(X, Y) and
-                    G.is_directed_path(p)):
-                    G.set_endpoint(X, Y, Endpoints.HEAD)
+        for Y in G.V:
+            for (X, Z) in permutations(G.neighbors(Y), 2):
+                if (G.is_any_head(X, Y) and
+                    G.is_any_circle(Z, Y) and
+                    not G.has_edge(X, Z)):
+                    G.set_endpoint(Z, Y, Endpoints.TAIL)
+                    G.set_endpoint(Y, Z, Endpoints.HEAD)
                     is_closed = False
         return is_closed
 
     def _R2(self, G: PAG) -> bool:
         is_closed = True
-        for (X, Z, Y) in permutations(G.V, 3):
-            if (G.is_any_head(X, Z) and
-                G.is_any_circle(Y, Z) and
-                G.is_non_collider(X, Z, Y)):
-                G.set_endpoint(Y, Z, Endpoints.TAIL)
-                G.set_endpoint(Z, Y, Endpoints.HEAD)
-                is_closed = False
+        for Y in G.V:
+            for X in G.neighbors(Y):
+                for Z in G.neighbors(Y) - {X}:
+                    if (G.is_any_circle(X, Z) and
+                        (G.is_tail_head(X, Y) and G.is_any_head(Y, Z)) or
+                        (G.is_any_head(X, Y) and G.is_tail_head(Y, Z))):
+                        G.set_endpoint(X, Z, Endpoints.HEAD)
+                        is_closed = False
         return is_closed
 
     def _R3(self, G: PAG) -> bool:
         is_closed = True
-        for (X, Z, Y, S) in permutations(G.V, 4):
-            if (G.is_any_circle(S, Z) and
-                G.is_collider(X, Z, Y) and
-                {S} in self._sepset[(X, Y)]):
-                is_closed = False
+        for Y in G.V:
+            for (X, Z) in permutations(G.neighbors(Y), 2):
+                if (G.is_any_head(X, Y) and
+                    G.is_any_head(Z, Y) and
+                    not G.has_edge(X, Z)):
+                    for W in (G.neighbors(X) & G.neighbors(Z)) - {Y}:
+                        if (G.is_any_circle(X, W) and
+                            G.is_any_circle(Z, W) and
+                            G.is_any_circle(W, Y)):
+                            G.set_endpoint(W, Y, Endpoints.HEAD)
+                            is_closed = False
         return is_closed
 
     def _R4(self, G: PAG) -> bool:
         is_closed = True
-        for (S, Z, Y) in permutations(G.V, 3):
-            for p in G.paths(S, Y):
-                if G.is_discriminating_path(p, Z):
-                    X = p[p.index(Z)-1]
-                    if (G.has_edge(X, Y) and
-                        G.is_any_circle(X, Z)):
-                        if {Z} not in self._sepset[(S, Y)]:
-                            G.set_endpoint(X, Z, Endpoints.HEAD)
-                            G.set_endpoint(Y, Z, Endpoints.HEAD)
-                        else:
-                            G.set_non_collider(X, Z, Y)
-                        is_closed = False
+        for Y in G.V:
+            for Z in G.neighbors(Y) - {Y}:
+                if G.is_any_circle(Z, Y):
+                    for W in G.V - {Y, Z}:
+                        for p in G.paths(W, Z):
+                            if G.is_discriminating_path(p, Y):
+                                if Y in self._dsep[(W, Z)]:
+                                    G.set_endpoint(Z, Y, Endpoints.TAIL)
+                                    G.set_endpoint(Y, Z, Endpoints.HEAD)
+                                else:
+                                    X = p[-3]
+                                    G.set_endpoint(X, Y, Endpoints.HEAD)
+                                    G.set_endpoint(Y, Z, Endpoints.HEAD)
+                                    G.set_endpoint(Z, Y, Endpoints.HEAD)
+                                    G.set_endpoint(Y, Z, Endpoints.HEAD)
+                                is_closed = False
+                                break
         return is_closed
 
     def transform(

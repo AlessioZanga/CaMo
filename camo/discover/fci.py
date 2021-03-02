@@ -1,43 +1,54 @@
-from typing import Set
+from collections import defaultdict
+from itertools import combinations
+from typing import Dict, Set, Tuple
 
 import pandas as pd
 
 from .ci import CI
-from ..backend import PAG
-from ..utils import _powerset
+from ..backend import Endpoints, PAG
 
 
 class FCI(CI):
 
+    _pdsep: Dict[Tuple[str, str], Set[str]]
+
+    def __init__(self, method: str = "t_student", alpha: float = 0.05):
+        super().__init__(method, alpha)
+        self._pdsep = defaultdict(set)
+
     def fit(self, data: pd.DataFrame):
         G = super().fit(data)
-        G = PAG(G.V, G.E)
+        G = PAG(G.V, G.E, Endpoints.CIRCLE)
 
-        # Call PC's R0
-        super(CI, self)._R0(G)  # pylint: disable=bad-super-call
+        self._R0(G)
 
-        def _pos_d_sep(X: str, Y: str) -> Set[str]:
+        def _possible_d_sep(G: PAG, X: str, Y: str = None) -> Set[str]:
             pds = set()
             for Z in G.V:
-                if Z not in (X, Y):
-                    for p in G.paths(X, Z):
-                        if all(
-                            G.is_collider(S, W, T) or \
-                            (not G.is_non_collider(S, W, T) and \
-                            G.has_edge(S, T))
-                            for (S, W, T) in zip(p, p[1:], p[2:])
-                        ):
-                            pds.add(Z)
+                for p in G.paths(X, Z):
+                    if all(
+                        G.is_collider(P, Q, R) or G.has_edge(P, R)
+                        for (P, Q, R) in zip(p, p[1:], p[2:])
+                    ):
+                        pds.add(Z)
+                        break
             return pds
 
-        for (X, Y) in G.E:
-            ext_d_sep = _pos_d_sep(X, Y) | _pos_d_sep(Y, X)
-            for S in _powerset(ext_d_sep):
-                _, p_value, _ = self._method(data, X, Y, S)
-                if p_value > self._alpha:
-                    G.del_edge(X, Y)
-                    self._sepset[(X, Y)].add(S)
-                    self._sepset[(Y, X)].add(S)
-                    break
+        for X in G.V:
+            self._pdsep[X] = _possible_d_sep(G, X)
+            for Y in G.neighbors(X):
+                repeat, n = True, 0
+                while repeat:
+                    repeat = False
+                    for S in combinations(self._pdsep[X] - {Y}, n):
+                        repeat = True
+                        _, p_value, _ = self._method(data, X, Y, S)
+                        if p_value > self._alpha:
+                            G.del_edge(X, Y)
+                            self._dsep[(X, Y)] = set(S)
+                            self._dsep[(Y, X)] = set(S)
+                            repeat = False
+                            break
+                    n += 1
 
         return G
