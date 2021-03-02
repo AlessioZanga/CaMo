@@ -26,8 +26,7 @@ def average_causal_effect(
         raise NotImplementedError("Only ACE for binary treatment is implemented.")
 
     # Try get value from methods
-    if isinstance(method, str):
-        method = _try_get(method, methods)
+    method = _try_get(method, methods)
 
     # Estimate E[Y|do(X=0),Z] and E[Y|do(X=1),Z]
     effect_0, effect_1 = method(data, X, Y, Z, estimator)

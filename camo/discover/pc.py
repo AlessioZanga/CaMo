@@ -2,7 +2,7 @@ from collections import defaultdict
 from functools import partial
 from inspect import getmembers, isfunction
 from itertools import combinations, permutations
-from typing import Dict, Optional, Iterable, Set, Tuple
+from typing import Callable, Dict, Optional, Iterable, Set, Tuple
 
 import pandas as pd
 
@@ -14,14 +14,17 @@ methods = dict(getmembers(ci, lambda x: isfunction(x) or isinstance(x, partial))
 
 class PC:
 
+    _alpha: float
+    _method: Callable
     _sepset: Dict[Tuple[str], Set[str]]
 
     def __init__(self, method: str = "t_student", alpha: float = 0.05):
-        self._method = method if not isinstance(method, str) else _try_get(method, methods)
         self._alpha = alpha
+        self._method = _try_get(method, methods)
+        self._sepset = defaultdict(set)
 
     def fit(self, data: pd.DataFrame):
-        self._sepset = defaultdict(set)
+        self._sepset.clear()
         # (Phase I - S1) Form the complete undirected graph G on the vertex set V.
         G = Graph.from_complete(data.columns)
 
