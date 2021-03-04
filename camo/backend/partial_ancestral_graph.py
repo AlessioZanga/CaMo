@@ -1,7 +1,7 @@
 from collections import defaultdict
 from enum import IntEnum
 from tempfile import NamedTemporaryFile
-from typing import Dict, Iterable, Optional, Set, Tuple
+from typing import Dict, Iterable, Optional, Tuple
 
 import pandas as pd
 
@@ -65,6 +65,21 @@ class PartialAncestralGraph(Graph):
     def is_any_tail(self, u: str, v: str) -> bool:
         return self.has_endpoint(u, v, Endpoints.TAIL)
 
+    def is_circle_circle(self, u: str, v: str) -> bool:
+        return \
+            self.has_endpoint(v, u, Endpoints.CIRCLE) and \
+            self.has_endpoint(u, v, Endpoints.CIRCLE)
+
+    def is_circle_head(self, u: str, v: str) -> bool:
+        return \
+            self.has_endpoint(v, u, Endpoints.CIRCLE) and \
+            self.has_endpoint(u, v, Endpoints.HEAD)
+
+    def is_tail_circle(self, u: str, v: str) -> bool:
+        return \
+            self.has_endpoint(v, u, Endpoints.TAIL) and \
+            self.has_endpoint(u, v, Endpoints.CIRCLE)
+
     def is_tail_head(self, u: str, v: str) -> bool:
         return \
             self.has_endpoint(v, u, Endpoints.TAIL) and \
@@ -75,8 +90,20 @@ class PartialAncestralGraph(Graph):
             self.has_endpoint(v, u, Endpoints.TAIL) and \
             self.has_endpoint(u, v, Endpoints.TAIL)
 
+    def is_uncovered_path(self, p: Tuple[str]) -> bool:
+        return all(
+            not self.has_edge(u, w)
+            for (u, v, w) in zip(p, p[1:], p[2:])
+        )
+
     def is_directed_path(self, p: Tuple[str]) -> bool:
         return all(self.is_any_head(u, v) for (u, v) in zip(p, p[1:]))
+
+    def is_potentially_directed_path(self, p: Tuple[str]) -> bool:
+        return all(
+            not (self.is_any_head(v, u) or self.is_any_tail(u, v))
+            for (u, v) in zip(p, p[1:])
+        )
 
     def is_collider(self, u: str, v: str, w: str) -> bool:
         return self.is_any_head(u, v) and self.is_any_head(w, v)
