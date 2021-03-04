@@ -2,7 +2,7 @@ from itertools import combinations, permutations
 from typing import Optional, Iterable, Tuple
 
 from .pc import PC
-from ..backend import Endpoints, PAG, Graph
+from ..backend import Endpoints, PAG
 
 
 class CI(PC):
@@ -36,10 +36,11 @@ class CI(PC):
         is_closed = True
         for Y in G.V:
             for X in G.neighbors(Y):
-                for Z in G.neighbors(Y) - {X}:
+                for Z in (G.neighbors(X) & G.neighbors(Y)) - {X, Y}:
                     if (G.is_any_circle(X, Z) and
-                        (G.is_tail_head(X, Y) and G.is_any_head(Y, Z)) or
-                        (G.is_any_head(X, Y) and G.is_tail_head(Y, Z))):
+                        G.is_any_head(X, Y) and
+                        G.is_any_head(Y, Z) and
+                        (G.is_any_tail(Y, X) or G.is_any_tail(Z, Y))):
                         G.set_endpoint(X, Z, Endpoints.HEAD)
                         is_closed = False
         return is_closed
@@ -47,11 +48,11 @@ class CI(PC):
     def _R3(self, G: PAG) -> bool:
         is_closed = True
         for Y in G.V:
-            for (X, Z) in permutations(G.neighbors(Y), 2):
+            for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
                 if (G.is_any_head(X, Y) and
                     G.is_any_head(Z, Y) and
                     not G.has_edge(X, Z)):
-                    for W in (G.neighbors(X) & G.neighbors(Z)) - {Y}:
+                    for W in (G.neighbors(X) & G.neighbors(Z)) - {X, Z}:
                         if (G.is_any_circle(X, W) and
                             G.is_any_circle(Z, W) and
                             G.is_any_circle(W, Y)):
@@ -82,7 +83,7 @@ class CI(PC):
 
     def transform(
         self,
-        G: Graph,
+        G: PAG,
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
     ):

@@ -98,8 +98,8 @@ class PC:
         # MEEK RULE R2: If X -> Y, Y -> Z, X and Z are adjacent,
         # and there is no arrowhead at Z, then orient X - Z as X -> Z.
         for Y in G.V:
-            for X in G.neighbors(Y):
-                for Z in G.neighbors(Y) & G.neighbors(X):
+            for X in G.neighbors(Y) - {Y}:
+                for Z in (G.neighbors(X) & G.neighbors(Y)) - {Y, X}:
                     if (G.is_tail_head(X, Y) and
                         G.is_tail_head(Y, Z) and
                         G.is_tail_tail(X, Z)):
@@ -133,8 +133,7 @@ class PC:
                     if (G.is_tail_tail(X, Y) and
                         G.is_tail_tail(Y, Z) and
                         G.is_tail_head(W, X) and
-                        G.is_tail_head(Z, W) and
-                        G.has_edge(Y, W)):
+                        G.is_tail_head(Z, W)):
                         G.set_endpoint(Y, X, Endpoints.HEAD)
                         is_closed = False
         return is_closed
