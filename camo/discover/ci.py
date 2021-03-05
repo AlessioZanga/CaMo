@@ -11,10 +11,8 @@ class CI(PC):
         is_closed = True
         for Y in G.V:
             for (X, Z) in combinations(G.neighbors(Y) - {Y}, 2):
-                if (G.is_any_circle(X, Y) and
-                    G.is_any_circle(Z, Y) and
-                    not G.has_edge(X, Z)):
-                    if Y not in self._dsep[(X, Z)]:
+                if (not G.has_edge(X, Z) and
+                    Y not in self._dsep[(X, Z)]):
                         G.set_endpoint(X, Y, Endpoints.HEAD)
                         G.set_endpoint(Z, Y, Endpoints.HEAD)
                         is_closed = False
