@@ -36,7 +36,7 @@ class Graph:
 
     @property
     def E(self) -> Set[Tuple[str, str]]:
-        return set(self._G.edges)
+        return set(self._G.edges) | {tuple(reversed(e)) for e in self._G.edges}
 
     def has_edge(self, u: str, v: str) -> bool:
         return self._G.has_edge(u, v)
@@ -64,7 +64,7 @@ class Graph:
     def has_path(self, u: str, v: str) -> bool:
         return nx.has_path(self._G, u, v)
 
-    def plot(self, figsize: Tuple[float, float] = None) -> None:
+    def plot(self, figsize: Tuple[float, float] = None) -> None:    # pragma: no cover
         sty = {"node_shape": ""}
         pos = nx.nx_agraph.pygraphviz_layout(self._G, prog="dot")
         figsize = figsize if figsize else (5, 5)
