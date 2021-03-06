@@ -13,8 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
-## [0.0.5] - 2020-02-dd
+## [0.0.5] - 2020-03-06
 ### Added
+* Added Partial Ancestral Graph (PAG) structure
+* Added Causal Inference (CI) discover algorithm
+* Added Fast Causal Inference (FCI) discover algorithm
+* Added Augmented Fast Causal Inference (aFCI) discover algorithm
 * Added ICA-LiNGAM algorithm
 * Added Direct-LiNGAM algorithm
 * Added partial correlation implementation
