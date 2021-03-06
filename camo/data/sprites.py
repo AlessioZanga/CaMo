@@ -1,12 +1,11 @@
-from io import StringIO
-
+import io
 import numpy as np
 import pandas as pd
 
 from ..structure import LinearGaussianSCM
 
 
-education_fertility = StringIO("""
+education_fertility = pd.read_csv(io.StringIO("""
 DADSO,RACE,NOSIB,FARM,REGN,ADOLF,REL,YCIG,FEC,ED,AGE
 456.67,-0.92,-15.82,-3.244,-1.32,-0.463,0.4768,-0.314,0.2356,18.66,16.213
 -0.92,0.089,0.1416,0.0124,0.0451,0.0174,-0.0191,0.0031,0.0031,-0.1567,-0.2305
@@ -19,10 +18,25 @@ DADSO,RACE,NOSIB,FARM,REGN,ADOLF,REL,YCIG,FEC,ED,AGE
 0.2356,0.0031,0.0018,-0.0045,-0.0039,0.0021,-0.0003,0.0009,0.0888,0.0267,0.2626
 18.66,-0.1567,-2.349,-0.2052,-0.2385,-0.1434,-0.0119,-0.138,0.0267,5.5696,3.658
 16.213,-0.2305,-1.423,-0.2262,-0.3458,0.1752,0.1683,0.1702,0.2626,3.658,16.6832
-""")
+"""))
 
-education_fertility = pd.read_csv(education_fertility)
 education_fertility = LinearGaussianSCM(
     education_fertility.columns,
     np.linalg.cholesky(education_fertility).T
+)
+
+publishing_productivity = pd.read_csv(io.StringIO("""
+ABILITY,GPQ,PREPROD,QFJ,SEX,CITES,PUBS
+1.0,0.62,0.25,0.16,-0.1,0.29,0.18
+0.62,1.0,0.09,0.28,0.0,0.25,0.15
+0.25,0.09,1.0,0.07,0.03,0.34,0.19
+0.16,0.28,0.07,1.0,0.1,0.37,0.41
+-0.1,0.0,0.03,0.1,1.0,0.13,0.43
+0.29,0.25,0.34,0.37,0.13,1.0,0.55
+0.18,0.15,0.19,0.41,0.43,0.55,1.0
+"""))
+
+publishing_productivity = LinearGaussianSCM(
+    publishing_productivity.columns,
+    np.linalg.cholesky(publishing_productivity).T
 )
