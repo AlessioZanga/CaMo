@@ -10,7 +10,7 @@ class AugmentedFCI(FCI):
     def _R5(self, G: PAG):
         is_close = True
         for X in G.V:
-            for Y in G.neighbors(X):
+            for Y in G.neighbors(X) - {X}:
                 if G.is_circle_circle(X, Y):
                     for p in G.paths(X, Y):
                         if (len(p) > 3 and

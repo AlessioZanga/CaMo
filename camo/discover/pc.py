@@ -36,16 +36,17 @@ class PC:
             # such that Adjacencies(G,X)\{Y} has cardinality greater than or equal to n,
             for (X, Y) in G.E:
                 # and a (**) subset S of Adjacencies(G,X)\{Y} of cardinality n,
-                for S in combinations(Nb[X] - {Y}, n):
-                    repeat = True   # (***)
-                    # and if X and Y are d-separated given S delete edge X - Y
-                    _, p_value, _ = self._method(data, X, Y, S)
-                    if p_value > self._alpha:
-                        G.del_edge(X, Y)
-                        # and record S in Sepset(X,Y) and Sepset(Y,X);
-                        self._dsep[(X, Y)] = set(S)
-                        self._dsep[(Y, X)] = set(S)
-                        break
+                if G.has_edge(X, Y):
+                    for S in combinations(Nb[X] - {Y}, n):
+                        repeat = True   # (***)
+                        # and if X and Y are d-separated given S delete edge X - Y
+                        _, p_value, _ = self._method(data, X, Y, S)
+                        if p_value > self._alpha:
+                            G.del_edge(X, Y)
+                            # and record S in Sepset(X,Y) and Sepset(Y,X);
+                            self._dsep[(X, Y)] = set(S)
+                            self._dsep[(Y, X)] = set(S)
+                            break
             # until [*] all ordered pairs of adjacent variables X and Y such that
             # Adjacencies(G,X)\{Y} has cardinality greater than or equal to n and
             # all subsets [**] S of Adjacencies(G,X)\{Y} of cardinality n have been
@@ -112,7 +113,7 @@ class PC:
         # MEEK RULE R3: If X - Y, Y - Z, Y - W, X -> W
         # and Z -> W, then orient Y - W as Y -> W.
         for Y in G.V:
-            for (X, Z) in permutations(G.neighbors(Y), 2):
+            for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
                 for W in G.neighbors(Y) - {X, Z}:
                     if (G.is_tail_tail(X, Y) and
                         G.is_tail_tail(Y, Z) and
@@ -128,7 +129,7 @@ class PC:
         # MEEK RULE R4: If X - Y, Y - Z, (Y - W or Y -> W or W -> Y), W -> X
         # and Z -> W, then orient X - Y as Y -> X.
         for Y in G.V:
-            for (X, Z) in permutations(G.neighbors(Y), 2):
+            for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
                 for W in G.neighbors(Y) - {X, Z}:
                     if (G.is_tail_tail(X, Y) and
                         G.is_tail_tail(Y, Z) and

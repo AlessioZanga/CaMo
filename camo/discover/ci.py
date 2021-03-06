@@ -13,15 +13,15 @@ class CI(PC):
             for (X, Z) in combinations(G.neighbors(Y) - {Y}, 2):
                 if (not G.has_edge(X, Z) and
                     Y not in self._dsep[(X, Z)]):
-                        G.set_endpoint(X, Y, Endpoints.HEAD)
-                        G.set_endpoint(Z, Y, Endpoints.HEAD)
-                        is_closed = False
+                    G.set_endpoint(X, Y, Endpoints.HEAD)
+                    G.set_endpoint(Z, Y, Endpoints.HEAD)
+                    is_closed = False
         return is_closed
 
     def _R1(self, G: PAG) -> bool:
         is_closed = True
         for Y in G.V:
-            for (X, Z) in permutations(G.neighbors(Y), 2):
+            for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
                 if (G.is_any_head(X, Y) and
                     G.is_any_circle(Z, Y) and
                     not G.has_edge(X, Z)):
@@ -33,7 +33,7 @@ class CI(PC):
     def _R2(self, G: PAG) -> bool:
         is_closed = True
         for Y in G.V:
-            for X in G.neighbors(Y):
+            for X in G.neighbors(Y) - {Y}:
                 for Z in (G.neighbors(X) & G.neighbors(Y)) - {X, Y}:
                     if (G.is_any_circle(X, Z) and
                         G.is_any_head(X, Y) and

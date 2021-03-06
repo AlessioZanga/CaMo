@@ -24,7 +24,7 @@ class FCI(CI):
 
         def _possible_d_sep(G: PAG, X: str, Y: str = None) -> Set[str]:
             pds = set()
-            for Z in G.V:
+            for Z in G.V - {X, Y}:
                 for p in G.paths(X, Z):
                     if all(
                         G.is_collider(P, Q, R) or G.has_edge(P, R)
@@ -36,7 +36,7 @@ class FCI(CI):
 
         for X in G.V:
             self._pdsep[X] = _possible_d_sep(G, X)
-            for Y in G.neighbors(X):
+            for Y in G.neighbors(X) - {X}:
                 repeat, n = True, 0
                 while repeat:
                     repeat = False
