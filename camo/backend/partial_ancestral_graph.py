@@ -137,7 +137,7 @@ class PartialAncestralGraph(Graph):
             out.at[u, v] = mapping[k]
         return out
 
-    def plot(self, figsize: Tuple[float, float] = None) -> None:
+    def plot(self, figsize: Tuple[float, float] = None) -> None:    # pragma: no cover
         import pygraphviz
         styles = {
             Endpoints.ANY: "odiamond",
