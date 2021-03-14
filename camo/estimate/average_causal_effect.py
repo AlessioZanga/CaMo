@@ -8,7 +8,6 @@ import pandas as pd
 from tqdm import trange
 
 from .estimators import AbstractEstimator, ESTIMATORS
-from ..utils import _try_get
 
 
 class AverageCausalEffect(AbstractEstimator):

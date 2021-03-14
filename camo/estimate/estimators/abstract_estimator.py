@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from inspect import getmembers, ismethod
-from typing import Any, Dict, Set
+from typing import Any, Set
 
 import pandas as pd
 import statsmodels.formula.api as smf
