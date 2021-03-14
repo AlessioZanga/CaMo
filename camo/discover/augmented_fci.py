@@ -114,7 +114,7 @@ class AugmentedFCI(FCI):
             is_closed &= self._R5(G)
             is_closed &= self._R6(G)
             is_closed &= self._R7(G)
-        
+
         is_closed = False
         while not is_closed:
             is_closed = True
