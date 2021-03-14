@@ -28,15 +28,25 @@ class TestConditionalIndependnece:
 
     @pytest.mark.parametrize("data, X, Y, Z, T", ADULT)
     def test_chi_square(self, data, X, Y, Z, T):
-        _, p_value, _ = camo.backend.chi_squared(data, X, Y, Z)
+        _, p_value, _ = camo.backend.ChiSquared().fit_predict(data, X, Y, Z)
         assert (p_value > 0.05) == T
     
     @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
-    def test_t_student(self, data, X, Y, Z, T):
-        _, p_value, _ = camo.backend.t_student(data, X, Y, Z)
+    def test_student_t(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.StudentT().fit_predict(data, X, Y, Z)
         assert (p_value > 0.05) == T
     
     @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
-    def test_z_fisher(self, data, X, Y, Z, T):
-        _, p_value, _ = camo.backend.z_fisher(data, X, Y, Z)
+    def test_fisher_z(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.FisherZ().fit_predict(data, X, Y, Z)
+        assert (p_value > 0.05) == T
+
+    @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
+    def test_fast_student_t(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.FastStudentT().fit_predict(data, X, Y, Z)
+        assert (p_value > 0.05) == T
+    
+    @pytest.mark.parametrize("data, X, Y, Z, T", FIGURE_3_1)
+    def test_fast_fisher_z(self, data, X, Y, Z, T):
+        _, p_value, _ = camo.backend.FastFisherZ().fit_predict(data, X, Y, Z)
         assert (p_value > 0.05) == T

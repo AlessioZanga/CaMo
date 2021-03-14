@@ -1,15 +1,11 @@
 from collections import defaultdict
-from functools import partial
-from inspect import getmembers, isfunction
 from itertools import combinations, permutations
 from typing import Callable, Dict, Optional, Iterable, Set, Tuple
 
 import pandas as pd
 
-from ..backend import Endpoints, PAG, Graph, conditional_independence_test as ci
+from ..backend import Endpoints, PAG, Graph, CONDITIONAL_INDEPENDENCE_TESTS
 from ..utils import _as_set, _try_get
-
-methods = dict(getmembers(ci, lambda x: isfunction(x) or isinstance(x, partial)))
 
 
 class PC:
@@ -18,12 +14,15 @@ class PC:
     _method: Callable
     _dsep: Dict[Tuple[str, str], Set[str]]
 
-    def __init__(self, method: str = "t_student", alpha: float = 0.05):
+    def __init__(self, method: str = "fast_student_t", alpha: float = 0.05):
+        self._method = _try_get(method, CONDITIONAL_INDEPENDENCE_TESTS)
         self._alpha = alpha
-        self._method = _try_get(method, methods)
         self._dsep = defaultdict(set)
 
     def fit(self, data: pd.DataFrame):
+        # Init conditional independence test
+        self._method = self._method().fit(data)
+
         # (Phase I - S1) Form the complete undirected graph G on the vertex set V.
         G = Graph.from_complete(data.columns)
 
@@ -40,7 +39,7 @@ class PC:
                     for S in combinations(Nb[X] - {Y}, n):
                         repeat = True   # (***)
                         # and if X and Y are d-separated given S delete edge X - Y
-                        _, p_value, _ = self._method(data, X, Y, S)
+                        _, p_value, _ = self._method.predict(X, Y, S)
                         if p_value > self._alpha:
                             G.del_edge(X, Y)
                             # and record S in Sepset(X,Y) and Sepset(Y,X);

@@ -100,7 +100,7 @@ N = camo.LinearGaussianSCM.from_structure(
 )
 
 PC_FIT = []
-for method in ["t_student", "z_fisher"]:
+for method in ["fisher_z", "student_t", "fast_fisher_z", "fast_student_t"]:
     PC_FIT.append((
         M.sample(1000, seed=31),
         method,
@@ -119,7 +119,7 @@ for method in ["t_student", "z_fisher"]:
     ))
 
 PC_FIT_TRANSFORM = []
-for method in ["t_student", "z_fisher"]:
+for method in ["fisher_z", "student_t", "fast_fisher_z", "fast_student_t"]:
     PC_FIT_TRANSFORM.append((
         M.sample(1000, seed=31),
         method,

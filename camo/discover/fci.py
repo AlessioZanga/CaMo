@@ -12,7 +12,7 @@ class FCI(CI):
 
     _pdsep: Dict[Tuple[str, str], Set[str]]
 
-    def __init__(self, method: str = "t_student", alpha: float = 0.05):
+    def __init__(self, method: str = "fast_student_t", alpha: float = 0.05):
         super().__init__(method, alpha)
         self._pdsep = defaultdict(set)
 
@@ -42,7 +42,7 @@ class FCI(CI):
                     repeat = False
                     for S in combinations(self._pdsep[X] - {Y}, n):
                         repeat = True
-                        _, p_value, _ = self._method(data, X, Y, S)
+                        _, p_value, _ = self._method.predict(X, Y, S)
                         if p_value > self._alpha:
                             G.del_edge(X, Y)
                             self._dsep[(X, Y)] = set(S)
