@@ -16,11 +16,11 @@ class AverageCausalEffect(AbstractEstimator):
         super().__init__(estimator, ESTIMATORS)
         self._estimator = self._estimator(*args, **kwargs)
 
-    def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         self._estimator = self._estimator.fit(data, X, Y, Z)
         return self
 
-    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         # Estimate E[Y|do(X=1),Z] and E[Y|do(X=0),Z]
         Y1, Y0 = self._estimator.predict(data, X, Y, Z)
         # ACE = E_Z[ E[Y|do(X=1),Z] - E[Y|do(X=0),Z] ]
@@ -58,7 +58,7 @@ class AverageCausalEffectBootstrap(AverageCausalEffect):
         # Compute ACE for each sample
         return estimator().fit_predict(sample, X, Y, Z)
 
-    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         # Compute ACE for input data
         ACE = super().predict(data, X, Y, Z)
         # Initialize multiprocessing pool

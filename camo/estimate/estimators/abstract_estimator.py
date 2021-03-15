@@ -18,12 +18,12 @@ class AbstractEstimator(ABC):
         self._estimator = _try_get(estimator, ESTIMATORS or STATSMODELS)
 
     @abstractmethod
-    def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         pass
 
-    def fit_predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def fit_predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         return self.fit(data, X, Y, Z).predict(data, X, Y, Z)
 
     @abstractmethod
-    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         pass

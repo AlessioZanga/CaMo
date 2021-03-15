@@ -8,7 +8,7 @@ from .propensity_score import PropensityScore
 
 class InverseProbabilityWeighting(PropensityScore):
 
-    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str] = None) -> Any:
+    def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         # Compute the propensity score
         e_Z = super().predict(data, X, Y, Z)
         # Estimate E[Y|do(X=1),Z] and E[Y|do(X=0),Z]
