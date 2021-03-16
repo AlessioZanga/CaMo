@@ -12,11 +12,12 @@ from .estimators import AbstractEstimator, ESTIMATORS
 
 class AverageCausalEffect(AbstractEstimator):
 
-    def __init__(self, estimator: str = "g_formula", *args, **kwargs):
-        super().__init__(estimator, ESTIMATORS)
-        self._estimator = self._estimator(*args, **kwargs)
+    def __init__(self, model: str = "g_formula", *args, **kwargs):
+        super().__init__(model, ESTIMATORS)
+        self._args, self._kwargs = args, kwargs
 
     def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
+        self._estimator = self._model(*self._args, **self._kwargs)
         self._estimator = self._estimator.fit(data, X, Y, Z)
         return self
 

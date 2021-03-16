@@ -12,10 +12,11 @@ STATSMODELS = dict(getmembers(smf, ismethod))
 
 class AbstractEstimator(ABC):
 
+    _model: Any
     _estimator: Any
 
-    def __init__(self, estimator: str = "ols", ESTIMATORS: Any = None):
-        self._estimator = _try_get(estimator, ESTIMATORS or STATSMODELS)
+    def __init__(self, model: str = "glm", MODELS: Any = None):
+        self._model = _try_get(model, MODELS or STATSMODELS)
 
     @abstractmethod
     def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
