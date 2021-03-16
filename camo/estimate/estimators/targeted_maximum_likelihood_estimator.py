@@ -1,9 +1,6 @@
 from typing import Any, Set
 
-import numpy as np
 import pandas as pd
-
-import statsmodels.formula.api as smf
 
 from scipy.special import expit, logit  # pylint: disable=no-name-in-module
 
