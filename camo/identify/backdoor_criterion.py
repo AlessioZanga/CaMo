@@ -24,7 +24,7 @@ def all_backdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[str
     adjustment_variables = G.V - X - Y - G.descendants(X)
 
     adjustment_sets = [
-        set(S)
+        S
         for S in _powerset(adjustment_variables)
         if is_backdoor_adjustment_set(G, X, Y, S)
     ]
@@ -42,7 +42,6 @@ def minimal_backdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set
 
     adjustment_sets = []
     for S in _powerset(adjustment_variables):
-        S = set(S)
         # An adjustment set is minimal if it is not
         # a super set of any smaller adjustment set
         is_super_set = any(S.issuperset(s) for s in adjustment_sets)

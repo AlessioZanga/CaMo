@@ -33,7 +33,7 @@ def all_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[st
     adjustment_variables = G.V - X - Y - G.descendants(X)
 
     adjustment_sets = [
-        set(S)
+        S
         for S in _powerset(adjustment_variables)
         if is_frontdoor_adjustment_set(G, X, Y, S)
     ]
@@ -51,7 +51,6 @@ def minimal_frontdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Se
 
     adjustment_sets = []
     for S in _powerset(adjustment_variables):
-        S = set(S)
         # An adjustment set is minimal if it is not
         # a super set of any smaller adjustment set
         is_super_set = any(S.issuperset(s) for s in adjustment_sets)
