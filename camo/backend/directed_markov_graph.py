@@ -13,13 +13,13 @@ class DirectedMarkovGraph(DirectedGraph):
     @property
     def probability_distribution(self) -> str:
         P = [
-            (v, self.parents(v))
-            for v in topological_sort(self)
+            (X, self.parents(X))
+            for X in topological_sort(self)
         ]
         P = [
-            f"P({v}|{','.join(parents)})"
-            if parents else f"P({v})"
-            for (v, parents) in P
+            f"P({X}|{','.join(parents)})"
+            if parents else f"P({X})"
+            for (X, parents) in P
         ]
         return ''.join(P)
 
@@ -30,10 +30,10 @@ class DirectedMarkovGraph(DirectedGraph):
     @property
     def v_structures(self) -> Set[Tuple[str]]:
         v_structures = set()
-        for v in self.V:
-            for (i, j) in combinations(self.parents(v), 2):
+        for X in self.V:
+            for (i, j) in combinations(self.parents(X), 2):
                 if not self.has_edge(i, j) and not self.has_edge(j, i):
-                    v_structures.add((i, v, j))
+                    v_structures.add((i, X, j))
         return v_structures
 
     @property

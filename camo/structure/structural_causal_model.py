@@ -80,12 +80,12 @@ class StructuralCausalModel(CausalModel):
         # Copy model
         out = self.copy()
         # Set intervened variables
-        for (v, k) in kwargs.items():
+        for (Y, k) in kwargs.items():
             # Fix v variable to constant k
-            out._F[v] = f"Eq(Symbol('{v}'), {k})"
+            out._F[Y] = f"Eq(Symbol('{Y}'), {k})"
             # Remove incoming edges
-            for u in out.parents(v):
-                out.del_edge(u, v)
+            for X in out.parents(Y):
+                out.del_edge(X, Y)
         return out
 
     def sample(self, size: int, seed: int = None) -> pd.DataFrame:
@@ -116,11 +116,11 @@ class StructuralCausalModel(CausalModel):
 
         # Check if both vertices are in a vertex set
         # else, add to exogenous variables
-        for (u, v) in E:
-            if u not in V:
-                U.add(u)
-            if v not in V:
-                U.add(v)
+        for (X, Y) in E:
+            if X not in V:
+                U.add(X)
+            if Y not in V:
+                U.add(Y)
 
         # Build the functional graph
         G = DirectedGraph(V | U, E)

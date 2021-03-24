@@ -20,31 +20,31 @@ class DirectedGraph(Graph):
         if E:
             self._G.add_edges_from(E)
 
-    def ancestors(self, v: str) -> Set[str]:
+    def ancestors(self, X: str) -> Set[str]:
         return {
             a
-            for u in _as_set(v)
+            for u in _as_set(X)
             for a in nx.ancestors(self._G, u)
         }
 
-    def parents(self, v: str) -> Set[str]:
+    def parents(self, X: str) -> Set[str]:
         return {
             p
-            for u in _as_set(v)
+            for u in _as_set(X)
             for p in self._G.predecessors(u)
         }
 
-    def children(self, v: str) -> Set[str]:
+    def children(self, X: str) -> Set[str]:
         return {
             c
-            for u in _as_set(v)
+            for u in _as_set(X)
             for c in self._G.successors(u)
         }
 
-    def descendants(self, v: str) -> Set[str]:
+    def descendants(self, X: str) -> Set[str]:
         return {
             d
-            for u in _as_set(v)
+            for u in _as_set(X)
             for d in nx.descendants(self._G, u)
         }
 

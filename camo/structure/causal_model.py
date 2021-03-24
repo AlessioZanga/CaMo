@@ -26,11 +26,11 @@ class CausalModel(DirectedMarkovGraph, ABC):
 
         # Check if both vertices are in a vertex set
         # else, add to exogenous variables
-        for (u, v) in E:
-            if u not in self._V:
-                self._U.add(u)
-            if v not in self._V:
-                self._U.add(v)
+        for (X, Y) in E:
+            if X not in self._V:
+                self._U.add(X)
+            if Y not in self._V:
+                self._U.add(Y)
 
         super().__init__(self._V | self._U, E)
 

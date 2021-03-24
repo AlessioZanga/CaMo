@@ -1,4 +1,3 @@
-from collections import defaultdict
 from enum import IntEnum
 from tempfile import NamedTemporaryFile
 from typing import Dict, Iterable, Optional, Tuple
@@ -29,84 +28,81 @@ class PartialAncestralGraph(Graph):
         endpoint: int = Endpoints.TAIL
     ):
         super().__init__(V, E)
-        # Initialize dict
         self._endpoints = {}
-        self._non_collider = defaultdict(set)
-        # Set default endpoints
-        for (u, v) in E:
-            self.set_endpoint(u, v, endpoint)
-            self.set_endpoint(v, u, endpoint)
+        for (X, Y) in E:
+            self.set_endpoint(X, Y, endpoint)
+            self.set_endpoint(Y, X, endpoint)
 
-    def add_edge(self, u: str, v: str, endpoint: int = Endpoints.TAIL) -> None:
-        self._G.add_edge(u, v)
-        self.set_endpoint(u, v, endpoint)
-        self.set_endpoint(v, u, endpoint)
+    def add_edge(self, X: str, Y: str, endpoint: int = Endpoints.TAIL) -> None:
+        self._G.add_edge(X, Y)
+        self.set_endpoint(X, Y, endpoint)
+        self.set_endpoint(Y, X, endpoint)
 
-    def del_edge(self, u: str, v: str) -> None:
-        self._G.remove_edge(u, v)
-        self.unset_endpoint(u, v)
-        self.unset_endpoint(v, u)
+    def del_edge(self, X: str, Y: str) -> None:
+        self._G.remove_edge(X, Y)
+        self.unset_endpoint(X, Y)
+        self.unset_endpoint(Y, X)
 
-    def has_endpoint(self, u: str, v: str, endpoint: int) -> bool:
-        return self._endpoints[(u, v)] == endpoint
+    def has_endpoint(self, X: str, Y: str, endpoint: int) -> bool:
+        return self._endpoints[(X, Y)] == endpoint
 
-    def set_endpoint(self, u: str, v: str, endpoint: int) -> None:
-        self._endpoints[(u, v)] = endpoint
+    def set_endpoint(self, X: str, Y: str, endpoint: int) -> None:
+        self._endpoints[(X, Y)] = endpoint
 
-    def unset_endpoint(self, u: str, v: str) -> None:
-        del self._endpoints[(u, v)]
+    def unset_endpoint(self, X: str, Y: str) -> None:
+        del self._endpoints[(X, Y)]
 
-    def is_any_circle(self, u: str, v: str) -> bool:
-        return self.has_endpoint(u, v, Endpoints.CIRCLE)
+    def is_any_circle(self, X: str, Y: str) -> bool:
+        return self.has_endpoint(X, Y, Endpoints.CIRCLE)
 
-    def is_any_head(self, u: str, v: str) -> bool:
-        return self.has_endpoint(u, v, Endpoints.HEAD)
+    def is_any_head(self, X: str, Y: str) -> bool:
+        return self.has_endpoint(X, Y, Endpoints.HEAD)
 
-    def is_any_tail(self, u: str, v: str) -> bool:
-        return self.has_endpoint(u, v, Endpoints.TAIL)
+    def is_any_tail(self, X: str, Y: str) -> bool:
+        return self.has_endpoint(X, Y, Endpoints.TAIL)
 
-    def is_circle_circle(self, u: str, v: str) -> bool:
+    def is_circle_circle(self, X: str, Y: str) -> bool:
         return \
-            self.has_endpoint(v, u, Endpoints.CIRCLE) and \
-            self.has_endpoint(u, v, Endpoints.CIRCLE)
+            self.has_endpoint(Y, X, Endpoints.CIRCLE) and \
+            self.has_endpoint(X, Y, Endpoints.CIRCLE)
 
-    def is_circle_head(self, u: str, v: str) -> bool:
+    def is_circle_head(self, X: str, Y: str) -> bool:
         return \
-            self.has_endpoint(v, u, Endpoints.CIRCLE) and \
-            self.has_endpoint(u, v, Endpoints.HEAD)
+            self.has_endpoint(Y, X, Endpoints.CIRCLE) and \
+            self.has_endpoint(X, Y, Endpoints.HEAD)
 
-    def is_tail_circle(self, u: str, v: str) -> bool:
+    def is_tail_circle(self, X: str, Y: str) -> bool:
         return \
-            self.has_endpoint(v, u, Endpoints.TAIL) and \
-            self.has_endpoint(u, v, Endpoints.CIRCLE)
+            self.has_endpoint(Y, X, Endpoints.TAIL) and \
+            self.has_endpoint(X, Y, Endpoints.CIRCLE)
 
-    def is_tail_head(self, u: str, v: str) -> bool:
+    def is_tail_head(self, X: str, Y: str) -> bool:
         return \
-            self.has_endpoint(v, u, Endpoints.TAIL) and \
-            self.has_endpoint(u, v, Endpoints.HEAD)
+            self.has_endpoint(Y, X, Endpoints.TAIL) and \
+            self.has_endpoint(X, Y, Endpoints.HEAD)
 
-    def is_tail_tail(self, u: str, v: str) -> bool:
+    def is_tail_tail(self, X: str, Y: str) -> bool:
         return \
-            self.has_endpoint(v, u, Endpoints.TAIL) and \
-            self.has_endpoint(u, v, Endpoints.TAIL)
+            self.has_endpoint(Y, X, Endpoints.TAIL) and \
+            self.has_endpoint(X, Y, Endpoints.TAIL)
 
     def is_uncovered_path(self, p: Tuple[str]) -> bool:
         return all(
-            not self.has_edge(u, w)
-            for (u, v, w) in zip(p, p[1:], p[2:])
+            not self.has_edge(X, Z)
+            for (X, Y, Z) in zip(p, p[1:], p[2:])
         )
 
     def is_directed_path(self, p: Tuple[str]) -> bool:
-        return all(self.is_any_head(u, v) for (u, v) in zip(p, p[1:]))
+        return all(self.is_any_head(X, Y) for (X, Y) in zip(p, p[1:]))
 
     def is_potentially_directed_path(self, p: Tuple[str]) -> bool:
         return all(
-            not (self.is_any_head(v, u) or self.is_any_tail(u, v))
-            for (u, v) in zip(p, p[1:])
+            not (self.is_any_head(Y, X) or self.is_any_tail(X, Y))
+            for (X, Y) in zip(p, p[1:])
         )
 
-    def is_collider(self, u: str, v: str, w: str) -> bool:
-        return self.is_any_head(u, v) and self.is_any_head(w, v)
+    def is_collider(self, X: str, Y: str, Z: str) -> bool:
+        return self.is_any_head(X, Y) and self.is_any_head(Z, Y)
 
     def is_discriminating_path(self, p: Tuple[str], Y: str):
         if len(p) < 4:  # (i)
@@ -133,8 +129,8 @@ class PartialAncestralGraph(Graph):
             Endpoints.HEAD: 2,
             Endpoints.TAIL: 3
         }
-        for (u, v), k in self._endpoints.items():
-            out.at[u, v] = mapping[k]
+        for (X, Y), k in self._endpoints.items():
+            out.at[X, Y] = mapping[k]
         return out
 
     def plot(self, figsize: Tuple[float, float] = None) -> None:    # pragma: no cover
@@ -150,12 +146,12 @@ class PartialAncestralGraph(Graph):
         figsize = figsize if figsize else (7, 7)
         G.graph_attr["fixedsize"] = True
         G.graph_attr["size"] = f"{figsize[0]},{figsize[1]}!"
-        for v in self._G.nodes:
-            G.add_node(v, shape="none")
-        for (u, v) in self._G.edges:
-            s = styles[self._endpoints[(u, v)]]
-            t = styles[self._endpoints[(v, u)]]
-            G.add_edge(u, v, arrowhead=s, arrowtail=t, dir="both")
+        for Y in self._G.nodes:
+            G.add_node(Y, shape="none")
+        for (X, Y) in self._G.edges:
+            s = styles[self._endpoints[(X, Y)]]
+            t = styles[self._endpoints[(Y, X)]]
+            G.add_edge(X, Y, arrowhead=s, arrowtail=t, dir="both")
         G.layout(prog="dot")
         G.draw(path)
         plt.figure(figsize=figsize)

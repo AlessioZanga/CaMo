@@ -155,20 +155,20 @@ SEX,2,0,0,0,2,2,0
 ]
 
 
-class TestAugmentedFCI:
+class TestaFCI:
 
     @pytest.mark.parametrize("R, E, T", aFCI_RULES)
     def test_rules(self, R, E, T):
         G = camo.PAG(E=[e[:2] for e in E])
         for e in E:
             G.set_endpoint(*e)
-        aFCI = camo.AugmentedFCI()
+        aFCI = camo.aFCI()
         getattr(aFCI, f"_R{R}")(G)
         for t in T:
             assert G.has_endpoint(*t)
 
     @pytest.mark.parametrize("data, T", aFCI_FIT_TRANSFORM)
     def test_fit_transform(self, data, T):
-        G = camo.AugmentedFCI().fit_transform(data)
+        G = camo.aFCI().fit_transform(data)
         G = G.to_adjacency_matrix()
         pd.testing.assert_frame_equal(G, T)

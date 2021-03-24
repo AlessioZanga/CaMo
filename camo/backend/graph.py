@@ -25,32 +25,32 @@ class Graph:
     def V(self) -> Set[str]:
         return set(self._G.nodes)
 
-    def has_vertex(self, v: str) -> bool:
-        return self._G.has_node(v)
+    def has_vertex(self, X: str) -> bool:
+        return self._G.has_node(X)
 
-    def add_vertex(self, v: str) -> None:
-        self._G.add_node(v)
+    def add_vertex(self, X: str) -> None:
+        self._G.add_node(X)
 
-    def del_vertex(self, v: str) -> None:
-        self._G.remove_node(v)
+    def del_vertex(self, X: str) -> None:
+        self._G.remove_node(X)
 
     @property
     def E(self) -> Set[Tuple[str, str]]:
         return set(self._G.edges) | {tuple(reversed(e)) for e in self._G.edges}
 
-    def has_edge(self, u: str, v: str) -> bool:
-        return self._G.has_edge(u, v)
+    def has_edge(self, X: str, Y: str) -> bool:
+        return self._G.has_edge(X, Y)
 
-    def add_edge(self, u: str, v: str) -> None:
-        self._G.add_edge(u, v)
+    def add_edge(self, X: str, Y: str) -> None:
+        self._G.add_edge(X, Y)
 
-    def del_edge(self, u: str, v: str) -> None:
-        self._G.remove_edge(u, v)
+    def del_edge(self, X: str, Y: str) -> None:
+        self._G.remove_edge(X, Y)
 
-    def neighbors(self, v: str) -> Set[str]:
+    def neighbors(self, X: str) -> Set[str]:
         return {
             n
-            for u in _as_set(v)
+            for u in _as_set(X)
             for n in self._G.neighbors(u)
         }
 
@@ -58,11 +58,11 @@ class Graph:
         subgraph = self._G.subgraph(V)
         return type(self)(subgraph.nodes, subgraph.edges)
 
-    def paths(self, u: str, v: str) -> Set[Tuple[str]]:
-        return {tuple(p) for p in nx.all_simple_paths(self._G, u, v)}
+    def paths(self, X: str, Y: str) -> Set[Tuple[str]]:
+        return {tuple(p) for p in nx.all_simple_paths(self._G, X, Y)}
 
-    def has_path(self, u: str, v: str) -> bool:
-        return nx.has_path(self._G, u, v)
+    def has_path(self, X: str, Y: str) -> bool:
+        return nx.has_path(self._G, X, Y)
 
     def plot(self, figsize: Tuple[float, float] = None) -> None:    # pragma: no cover
         sty = {"node_shape": ""}

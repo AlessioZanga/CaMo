@@ -142,8 +142,8 @@ class TestCI:
         for e in E:
             G.set_endpoint(*e)
         CI = camo.CI()
-        for (u, v, s) in S:
-            CI._dsep[(u, v)] = s
+        for (X, Y, s) in S:
+            CI._dsep[(X, Y)] = s
         getattr(CI, f"_R{R}")(G)
         for t in T:
             assert G.has_endpoint(*t)

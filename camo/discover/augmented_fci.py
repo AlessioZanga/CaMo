@@ -5,7 +5,7 @@ from .fci import FCI
 from ..backend import Endpoints, PAG
 
 
-class AugmentedFCI(FCI):
+class aFCI(FCI):
 
     def _R5(self, G: PAG):
         is_close = True
@@ -17,12 +17,12 @@ class AugmentedFCI(FCI):
                             not G.has_edge(Y, p[1]) and
                             not G.has_edge(X, p[-2]) and
                             all(    # circle path
-                                G.is_circle_circle(u, v)
-                                for (u, v) in zip(p, p[1:])
+                                G.is_circle_circle(Z, W)
+                                for (Z, W) in zip(p, p[1:])
                             ) and G.is_uncovered_path(p)):
-                            for (u, v) in zip(p, p[1:]):
-                                G.set_endpoint(v, u, Endpoints.TAIL)
-                                G.set_endpoint(u, v, Endpoints.TAIL)
+                            for (Z, W) in zip(p, p[1:]):
+                                G.set_endpoint(W, Z, Endpoints.TAIL)
+                                G.set_endpoint(Z, W, Endpoints.TAIL)
                             G.set_endpoint(X, Y, Endpoints.TAIL)
                             G.set_endpoint(Y, X, Endpoints.TAIL)
                             is_close = False
@@ -90,8 +90,8 @@ class AugmentedFCI(FCI):
                             for p2 in G.paths(X, Z):
                                 if (G.is_uncovered_path(p2) and
                                     G.is_potentially_directed_path(p2)):
-                                    u, v = p1[1], p2[1]
-                                    if (u != v and not G.has_edge(u, v)):
+                                    S, T = p1[1], p2[1]
+                                    if (S != T and not G.has_edge(S, T)):
                                         G.set_endpoint(W, X, Endpoints.TAIL)
                                         is_close = False
                                         done = True

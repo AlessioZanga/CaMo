@@ -39,16 +39,16 @@ class LinearSCM(CausalModel):
 
         super().__init__(self._Beta.index, self._Gamma.index, E)
 
-    def add_vertex(self, v: str) -> None:
+    def add_vertex(self, X: str) -> None:
         raise NotImplementedError()  # FIXME:
 
-    def del_vertex(self, v: str) -> None:
+    def del_vertex(self, X: str) -> None:
         raise NotImplementedError()  # FIXME:
 
-    def add_edge(self, u: str, v: str) -> None:
+    def add_edge(self, X: str, Y: str) -> None:
         raise NotImplementedError()  # FIXME:
 
-    def del_edge(self, u: str, v: str) -> None:
+    def del_edge(self, X: str, Y: str) -> None:
         raise NotImplementedError()  # FIXME:
 
     def copy(self):
@@ -67,18 +67,18 @@ class LinearSCM(CausalModel):
         return self._Gamma.copy()
 
     def do(self, **kwargs):
-        # Check if v is endogenous
+        # Check if X is endogenous
         if not (kwargs.keys() & self._V):
             raise ValueError()
         # Copy model
         out = self.copy()
         # Set intervened variables
-        for (v, k) in kwargs.items():
-            # Fix v variable to constant k
-            out._Beta[v], out._Gamma[v], out._Do[v] = 0, 0, k
+        for (Y, k) in kwargs.items():
+            # Fix X variable to constant k
+            out._Beta[Y], out._Gamma[Y], out._Do[Y] = 0, 0, k
             # Remove incoming edges
-            for u in out.parents(v):
-                out.del_edge(u, v)
+            for X in out.parents(Y):
+                out.del_edge(X, Y)
         return out
 
     @classmethod
@@ -91,26 +91,26 @@ class LinearSCM(CausalModel):
 
         # Check if both vertices are in a vertex set
         # else, add to exogenous variables
-        for (u, v) in E:
-            if u not in V:
-                U.add(u)
-            if v not in V:
-                U.add(v)
+        for (X, Y) in E:
+            if X not in V:
+                U.add(X)
+            if Y not in V:
+                U.add(Y)
 
         U = list(U)
 
         Beta = np.zeros((len(V), len(V)))
         Beta = pd.DataFrame(Beta, index=V, columns=V)
-        for (u, v) in E:
-            if u in V and v in V:
-                Beta.loc[u, v] = 1
+        for (X, Y) in E:
+            if X in V and Y in V:
+                Beta.loc[X, Y] = 1
 
         Gamma = None
         if U:
             Gamma = np.zeros((len(U), len(V)))
             Gamma = pd.DataFrame(Gamma, index=U, columns=V)
-            for (u, v) in E:
-                if u in U and v in V:
-                    Gamma.loc[u, v] = 1
+            for (X, Y) in E:
+                if X in U and Y in V:
+                    Gamma.loc[X, Y] = 1
 
         return cls(V, Beta, Gamma)
