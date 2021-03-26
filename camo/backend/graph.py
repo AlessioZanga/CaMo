@@ -1,3 +1,4 @@
+from itertools import permutations
 from typing import Iterable, Optional, Set, Tuple
 
 import matplotlib.pyplot as plt
@@ -76,9 +77,7 @@ class Graph:
 
     @classmethod
     def from_complete(cls, V: Set[str]):
-        G = cls()
-        G._G = nx.complete_graph(V)
-        return G
+        return cls(E=list(permutations(V, 2)))
 
     def __repr__(self):
         return f"{self.__class__.__name__}(V={self.V}, E={self.E})"

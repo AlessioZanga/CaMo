@@ -158,3 +158,6 @@ class PartialAncestralGraph(Graph):
         _ = plt.imshow(mpimg.imread(path))
         plt.axis("off")
         plt.show()
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(V={self.V}, E={self.E}, endpoints={self._endpoints})"

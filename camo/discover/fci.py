@@ -16,9 +16,9 @@ class FCI(CI):
         super().__init__(method, alpha)
         self._pdsep = defaultdict(set)
 
-    def fit(self, data: pd.DataFrame):
+    def fit(self, data: pd.DataFrame) -> PAG:
         G = super().fit(data)
-        G = PAG(G.V, G.E, Endpoints.CIRCLE)
+        G = type(G)(G.V, G.E, Endpoints.CIRCLE)
 
         self._R0(G)
 

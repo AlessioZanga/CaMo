@@ -2,7 +2,7 @@ from itertools import combinations, permutations
 from typing import Optional, Iterable, Tuple
 
 from .pc import PC
-from ..backend import Endpoints, PAG
+from ..backend import PAG, tsPAG, Endpoints
 
 
 class CI(PC):
@@ -84,12 +84,21 @@ class CI(PC):
         G: PAG,
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
-    ):
-        G = PAG(G.V, G.E, Endpoints.CIRCLE)
+    ) -> PAG:
+        G = type(G)(G.V, G.E, Endpoints.CIRCLE)
 
         self._KB(G, blacklist, whitelist, Endpoints.CIRCLE)
 
         self._R0(G)
+
+        # If G is a timeseries graph
+        if isinstance(G, tsPAG):
+            for (X, Y) in G.E:
+                if X.endswith(":0") and not Y.endswith(":0"):
+                    # Orient any edge X *-* Y from past
+                    # to future as X --> Y
+                    G.set_endpoint(Y, X, Endpoints.TAIL)
+                    G.set_endpoint(X, Y, Endpoints.HEAD)
 
         is_closed = False
         while not is_closed:

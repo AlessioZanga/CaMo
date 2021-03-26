@@ -4,7 +4,7 @@ from typing import Callable, Dict, Optional, Iterable, Set, Tuple
 
 import pandas as pd
 
-from ..backend import Endpoints, PAG, Graph, CONDITIONAL_INDEPENDENCE_TESTS
+from ..backend import PAG, tsPAG, Endpoints, CONDITIONAL_INDEPENDENCE_TESTS
 from ..utils import _as_set, _try_get
 
 
@@ -19,12 +19,13 @@ class PC:
         self._alpha = alpha
         self._dsep = defaultdict(set)
 
-    def fit(self, data: pd.DataFrame):
+    def fit(self, data: pd.DataFrame) -> PAG:
         # Init conditional independence test
         self._method = self._method().fit(data)
 
         # (Phase I - S1) Form the complete undirected graph G on the vertex set V.
-        G = Graph.from_complete(data.columns)
+        G = tsPAG if data.index.name == "tsPAG" else PAG    # For tsFCI compatibility
+        G = G.from_complete(data.columns)
 
         # Let Adjacencies(G,A) be the set of vertices adjacent to A in graph G.
         repeat, n = True, 0
@@ -61,7 +62,7 @@ class PC:
         data: pd.DataFrame,
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
-    ):
+    ) -> PAG:
         return self.transform(self.fit(data), blacklist, whitelist)
 
     def _R0(self, G: PAG) -> bool:
@@ -173,11 +174,11 @@ class PC:
 
     def transform(
         self,
-        G: Graph,
+        G: PAG,
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
-    ):
-        G = PAG(G.V, G.E)
+    ) -> PAG:
+        G = type(G)(G.V, G.E)
 
         # Apply knowledge base (blacklist, whitelist)
         self._KB(G, blacklist, whitelist)

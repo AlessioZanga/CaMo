@@ -105,7 +105,7 @@ class aFCI(FCI):
         G: PAG,
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
-    ):
+    ) -> PAG:
         G = super().transform(G, blacklist, whitelist)
 
         is_closed = False
