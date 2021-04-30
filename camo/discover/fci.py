@@ -18,7 +18,7 @@ class FCI(CI):
 
     def fit(self, data: pd.DataFrame) -> PAG:
         G = super().fit(data)
-        G = type(G)(G.V, G.E, Endpoints.CIRCLE)
+        G = type(G)(G.V, G.E, Endpoints.CIRCLE, Endpoints.CIRCLE)
 
         self._R0(G)
 

@@ -124,21 +124,6 @@ class PC:
                         is_closed = False
         return is_closed
 
-    def _R4(self, G: PAG) -> bool:
-        is_closed = True
-        # MEEK RULE R4: If X - Y, Y - Z, (Y - W or Y -> W or W -> Y), W -> X
-        # and Z -> W, then orient X - Y as Y -> X.
-        for Y in G.V:
-            for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
-                for W in G.neighbors(Y) - {X, Z}:
-                    if (G.is_tail_tail(X, Y) and
-                        G.is_tail_tail(Y, Z) and
-                        G.is_tail_head(W, X) and
-                        G.is_tail_head(Z, W)):
-                        G.set_endpoint(Y, X, Endpoints.HEAD)
-                        is_closed = False
-        return is_closed
-
     def _KB(
         self,
         G: PAG,
@@ -162,7 +147,7 @@ class PC:
             for (X, Y) in W:
                 if not G.has_edge(X, Y):
                     # Add edge if not present
-                    G.add_edge(X, Y, endpoint)
+                    G.add_edge(X, Y, head=endpoint)
                 if (Y, X) not in W:
                     # If only one direction is blacklisted, orient edge.
                     G.set_endpoint(X, Y, Endpoints.HEAD)
@@ -193,7 +178,6 @@ class PC:
             is_closed &= self._R1(G)
             is_closed &= self._R2(G)
             is_closed &= self._R3(G)
-            is_closed &= self._R4(G)
         # until no more edges can be oriented.
 
         return G

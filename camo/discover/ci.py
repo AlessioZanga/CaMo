@@ -85,7 +85,7 @@ class CI(PC):
         blacklist: Optional[Iterable[Tuple[str, str]]] = None,
         whitelist: Optional[Iterable[Tuple[str, str]]] = None
     ) -> PAG:
-        G = type(G)(G.V, G.E, Endpoints.CIRCLE)
+        G = type(G)(G.V, G.E, Endpoints.CIRCLE, Endpoints.CIRCLE)
 
         self._KB(G, blacklist, whitelist, Endpoints.CIRCLE)
 

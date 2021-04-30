@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 from .graph import Graph
+from ..utils import _as_set
 
 
 class Endpoints(IntEnum):
@@ -25,18 +26,25 @@ class PartialAncestralGraph(Graph):
         self,
         V: Optional[Iterable[str]] = None,
         E: Optional[Iterable[Tuple[str, str]]] = None,
-        endpoint: int = Endpoints.TAIL
+        tail: int = Endpoints.TAIL,
+        head: int = Endpoints.TAIL
     ):
+        V, E = _as_set(V), _as_set(E)
         super().__init__(V, E)
         self._endpoints = {}
         for (X, Y) in E:
-            self.set_endpoint(X, Y, endpoint)
-            self.set_endpoint(Y, X, endpoint)
+            self.set_endpoint(X, Y, head)
+            self.set_endpoint(Y, X, tail)
 
-    def add_edge(self, X: str, Y: str, endpoint: int = Endpoints.TAIL) -> None:
+    def add_edge(
+        self,
+        X: str,
+        Y: str,
+        tail: int = Endpoints.TAIL,
+        head: int = Endpoints.TAIL) -> None:
         self._G.add_edge(X, Y)
-        self.set_endpoint(X, Y, endpoint)
-        self.set_endpoint(Y, X, endpoint)
+        self.set_endpoint(X, Y, head)
+        self.set_endpoint(Y, X, tail)
 
     def del_edge(self, X: str, Y: str) -> None:
         self._G.remove_edge(X, Y)
