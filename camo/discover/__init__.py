@@ -9,3 +9,4 @@ from .direct_lingam import DirectLiNGAM
 from .dag_from_cpdag import dag_from_cpdag
 from .mag_from_pag import mag_from_pag
 
+from .bic import BIC
