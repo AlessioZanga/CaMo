@@ -78,6 +78,11 @@ class PartialAncestralGraph(Graph):
         return \
             self.has_endpoint(Y, X, Endpoints.CIRCLE) and \
             self.has_endpoint(X, Y, Endpoints.HEAD)
+    
+    def is_head_head(self, X: str, Y: str) -> bool:
+        return \
+            self.has_endpoint(Y, X, Endpoints.HEAD) and \
+            self.has_endpoint(X, Y, Endpoints.HEAD)
 
     def is_tail_circle(self, X: str, Y: str) -> bool:
         return \

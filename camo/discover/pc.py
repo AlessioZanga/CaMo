@@ -114,13 +114,28 @@ class PC:
         # and Z -> W, then orient Y - W as Y -> W.
         for Y in G.V:
             for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
-                for W in G.neighbors(Y) - {X, Z}:
+                for W in (G.neighbors(X) & G.neighbors(Y) & G.neighbors(Z) - {X, Y, Z}):
                     if (G.is_tail_tail(X, Y) and
                         G.is_tail_tail(Y, Z) and
                         G.is_tail_tail(Y, W) and
                         G.is_tail_head(X, W) and
                         G.is_tail_head(Z, W)):
                         G.set_endpoint(Y, W, Endpoints.HEAD)
+                        is_closed = False
+        return is_closed
+    
+    def _R4(self, G: PAG) -> bool:
+        is_closed = True
+        # MEEK RULE R4: If X - Y, Y - Z, (Y - W or Y -> W or W -> Y), W -> X
+        # and Z -> W, then orient X - Y as Y -> X.
+        for Y in G.V:
+            for (X, Z) in permutations(G.neighbors(Y) - {Y}, 2):
+                for W in (G.neighbors(X) & G.neighbors(Y) & G.neighbors(Z) - {X, Y, Z}):
+                    if (G.is_tail_tail(X, Y) and
+                        G.is_tail_tail(Y, Z) and
+                        G.is_tail_head(W, X) and
+                        G.is_tail_head(Z, W)):
+                        G.set_endpoint(Y, X, Endpoints.HEAD)
                         is_closed = False
         return is_closed
 

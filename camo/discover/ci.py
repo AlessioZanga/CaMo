@@ -50,7 +50,7 @@ class CI(PC):
                 if (G.is_any_head(X, Y) and
                     G.is_any_head(Z, Y) and
                     not G.has_edge(X, Z)):
-                    for W in (G.neighbors(X) & G.neighbors(Z)) - {X, Z}:
+                    for W in (G.neighbors(X) & G.neighbors(Y) & G.neighbors(Z)) - {X, Y, Z}:
                         if (G.is_any_circle(X, W) and
                             G.is_any_circle(Z, W) and
                             G.is_any_circle(W, Y)):
