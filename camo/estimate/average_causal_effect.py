@@ -54,14 +54,15 @@ class AverageCausalEffectBootstrap(AverageCausalEffect):
 
     def _predict_sample(self, estimator, data, X, Y, Z):
         # Sample from dataset with replacement
-        sample = data.sample(len(data), replace=True)
+        sample = data.groupby(X, group_keys=False)
+        sample = sample.apply(lambda x: x.sample(len(x), replace=True))
         sample.reset_index(drop=True, inplace=True)
         # Compute ACE for each sample
         return estimator().fit_predict(sample, X, Y, Z)
 
     def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         # Compute ACE for input data
-        ACE = super().predict(data, X, Y, Z)
+        ACE = self._parameters().fit_predict(data, X, Y, Z)
         # Initialize multiprocessing pool
         pool = Pool(self._processes)
         # Apply parallel worker async
@@ -78,4 +79,4 @@ class AverageCausalEffectBootstrap(AverageCausalEffect):
         # Compute the ACE bias
         bias = np.mean(samples) - ACE
         # Return ACE with confidence bounds and bias
-        return ACE, lower, upper, bias
+        return ACE, samples, lower, upper, bias

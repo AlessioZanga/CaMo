@@ -12,7 +12,7 @@ class GFormula(AbstractEstimator):
         Z = _as_set(Z)
         f = f"{Y} ~ {X}"
         f = f if not Z else f + " + " + " + ".join(Z)
-        self._estimator = self._model(f, data).fit()
+        self._estimator = self._model(f, data).fit(disp=0)
         return self
 
     def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:

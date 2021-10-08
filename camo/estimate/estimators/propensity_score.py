@@ -15,7 +15,7 @@ class PropensityScore(AbstractEstimator):
     def fit(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
         Z = _as_set(Z)
         f = f"{X} ~ " + " + ".join(Z) if Z else None
-        self._estimator = self._model(f, data).fit() if f else None
+        self._estimator = self._model(f, data).fit(disp=0) if f else None
         return self
 
     def predict(self, data: pd.DataFrame, X: str, Y: str, Z: Set[str]) -> Any:
