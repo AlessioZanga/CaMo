@@ -15,7 +15,7 @@ def is_backdoor_adjustment_set(G: CausalModel, X: str, Y: str, Z: str = None) ->
         return False
 
     # (ii) Z blocks every path between X and Y that contains an arrow into X.
-    return G.is_d_separated(G.parents(X), Y, Z | X)
+    return all(G.is_d_separated(W, Y, Z | X) for W in G.parents(X))
 
 
 def all_backdoor_adjustment_sets(G: CausalModel, X: str, Y: str) -> List[Set[str]]:
